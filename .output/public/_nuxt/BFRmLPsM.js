@@ -1,0 +1,1 @@
+import{g as o,a as r,c as s,m as f}from"./BqACKYKw.js";async function i(e){return new Promise(async(a,c)=>{const n=o(r,"uht_vote_nft",e),t=await s(n);a(t.data())})}async function y(e,a){return new Promise(async(c,n)=>{try{const t=o(r,"uht_vote_nft",e);await f(t,a),c(a)}catch(t){n(t)}})}export{y as c,i as g};

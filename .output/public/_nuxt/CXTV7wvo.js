@@ -1,0 +1,1 @@
+import{u as o}from"./BqACKYKw.js";import{c as n}from"./BLqpxtBP.js";function a(){return{referralPoints:n(()=>{let t=0;const r=o().value.referrals;if(!r||(r==null?void 0:r.length)<=0)return t;for(const e of r)e.pointsClaimed||(t=t+200);return t})}}export{a as r};

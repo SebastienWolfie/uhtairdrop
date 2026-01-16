@@ -1,0 +1,44 @@
+
+html {
+  margin: 0 auto;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+body::-webkit-scrollbar {
+  width: 7px;
+}
+
+/* Track */
+body::-webkit-scrollbar-track {
+  background: white;
+}
+
+/* Handle */
+body::-webkit-scrollbar-thumb {
+  background: #7C58F2;
+  border-radius: 5px;
+}
+
+/* Handle on hover */
+body::-webkit-scrollbar-thumb:hover {
+  background: #7C58F2;
+}
+
+
+
+
+
+li{
+  list-style: disc outside none;
+  display: list-item;
+  margin-left: 1em;
+  margin-top: 2px;
+}
+
+ol li{
+  list-style: decimal outside none;
+  display: list-item;
+  margin-left: 1em;
+  margin-top: 2px;
+}
