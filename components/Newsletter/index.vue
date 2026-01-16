@@ -93,7 +93,9 @@ function submitClicked() {
         nickname: nickname.value,
         ethAddress: ethAddress.value
     })
-        .then(data => {
+        .then(async(data) => {
+            const { sendWelcomeEmail } = useEmaiApi()
+            await sendWelcomeEmail(email.value, nickname.value);
             loading.value = false
             email.value = ''
             nickname.value = ''

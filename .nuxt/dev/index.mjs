@@ -1060,9 +1060,9 @@ const errorDev = /*#__PURE__*/Object.freeze({
 const sendWelcome_post = defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);
-    const { id, email, nickname } = body;
-    if (!id || !email || !nickname) {
-      throw createError({ statusCode: 400, message: "Missing id, email or nickname" });
+    const { email, nickname } = body;
+    if (!email || !nickname) {
+      throw createError({ statusCode: 400, message: "Missing email or nickname" });
     }
     const baseUrl = "https://uht-airdrop-link.com";
     const uhtLink = `${baseUrl}/dashboard/${id}`;

@@ -3,10 +3,10 @@ import * as nodemailer from 'nodemailer';
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);
-    const { id, email, nickname } = body;
+    const { email, nickname } = body;
 
-    if (!id || !email || !nickname) {
-      throw createError({ statusCode: 400, message: 'Missing id, email or nickname' });
+    if (!email || !nickname) {
+      throw createError({ statusCode: 400, message: 'Missing email or nickname' });
     }
 
     // --- VARIABLES ---
