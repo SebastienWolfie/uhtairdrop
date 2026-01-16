@@ -39,8 +39,7 @@
             <textarea v-model="reason" rows="5"></textarea>
           </div>
 
-          <button @click="() => submitAppeal()" class="submit-btn">{{ (loading) ? 'Submitting...' : 'Submit
-            Appeal'}}</button>
+          <button @click="() => submitAppeal()" class="submit-btn">{{ (loading) ? 'Submitting...' : 'Submit Appeal'}}</button>
         </div>
 
         <div v-if="error" class="flex items-center mt-4">
