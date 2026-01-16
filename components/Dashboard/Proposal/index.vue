@@ -108,7 +108,7 @@
             <div class="flex flex-wrap items-baseline gap-2">
               <h3 class="truncate text-lg font-semibold">{{ nft.name }}</h3>
               <span class="text-sm text-white/70">{{ nft.votes.toLocaleString() }} votes • {{ nft.percent.toFixed(2)
-                }}%</span>
+              }}%</span>
             </div>
             <div class="mt-2">
               <ProgressBar :value="nft.percent" />
@@ -140,13 +140,13 @@
 
 <script setup>
 import { ref, reactive, computed, watch, onMounted, onUnmounted } from 'vue';
-import { deleteStake, getAllStakeByAddress, create as saveStake } from '../../../api/stake';
-import { mintTokens, transferTokens } from '../../../api/web3/uhtdex';
+import { deleteStake, getAllStakeByAddress, create as saveStake } from '../../../apiss/stake';
+import { mintTokens, transferTokens } from '../../../apiss/web3/uhtdex';
 import { db } from "@/firebase";
 import { doc, updateDoc } from "firebase/firestore";
-import { list as nftList } from "@/api/NftDatabase";
-import { getVotedNFT, create as saveVotedNFT } from '../../../api/nftvoting';
-import { getVotedASR, create as saveVotedASR } from '../../../api/asrvoting';
+import { list as nftList } from "~/apiss/NftDatabase";
+import { getVotedNFT, create as saveVotedNFT } from '../../../apiss/nftvoting';
+import { getVotedASR, create as saveVotedASR } from '../../../apiss/asrvoting';
 import StakeCard from './StakeCard.vue';
 import ProgressBar from './ProgressBar.vue';
 import Metric from './Metric.vue';
@@ -325,7 +325,7 @@ const FINISH_ORDER = [
   "nft2",
   "nft1"
 ];
-const RANK_WEIGHTS = [10,8,7,5,4,3,3,2,1,1];
+const RANK_WEIGHTS = [10, 8, 7, 5, 4, 3, 3, 2, 1, 1];
 
 const nfts = ref([]);
 const hasVoted = ref(false);
@@ -670,19 +670,19 @@ function updateAsrVotes() {
 }
 
 // Start simulation when component mounts
-onMounted(async()=>{
+onMounted(async () => {
   initializeARS()
   startAsrSimulation()
 });
 
-watch(()=> auth.value.walletAddress, ()=> initializeARS())
+watch(() => auth.value.walletAddress, () => initializeARS())
 
-async function initializeARS(){
+async function initializeARS() {
   const storedVote = await getVotedASR(auth.value.walletAddress);
   if (storedVote?.answerID) {
     hasVotedAsr.value = true;
     userVotedAsr.value = storedVote.answerID;
-  }else {
+  } else {
     hasVotedAsr.value = false;
     userVotedAsr.value = null;
   }

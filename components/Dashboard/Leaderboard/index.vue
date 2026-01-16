@@ -7,7 +7,7 @@
       <header>
         <div class="uht-mark">
           <img src="/images/uht-jar.jpg" alt="Leaderboard Logo"
-               onerror="this.src='https://dummyimage.com/96x96/6a44ff/ffffff&text=UHT'"/>
+            onerror="this.src='https://dummyimage.com/96x96/6a44ff/ffffff&text=UHT'" />
           <div>
             <div class="brand-title">Leaderboard</div>
             <span class="badge"><small>Top Referrers • Earn Points • Win Rewards</small></span>
@@ -20,8 +20,7 @@
         <h1>Top 50 Health Achievers 🎯</h1>
 
         <ul>
-          <li v-for="(user, index) in formatList" :key="user.walletAddress"
-              :class="rankClass(index)">
+          <li v-for="(user, index) in formatList" :key="user.walletAddress" :class="rankClass(index)">
             <div class="rank">
               <span v-if="index === 0" class="medal gold">🥇</span>
               <span v-else-if="index === 1" class="medal silver">🥈</span>
@@ -39,7 +38,8 @@
       </section>
 
       <!-- Current User Rank -->
-      <section class="your-rank" v-if="auth.walletAddress.toLowerCase()!='0xb2e85090cBb09C9F508D39Db55f996F364281c62'.toLowerCase()">
+      <section class="your-rank"
+        v-if="auth.walletAddress.toLowerCase() != '0xb2e85090cBb09C9F508D39Db55f996F364281c62'.toLowerCase()">
         <h2>Your Position</h2>
         <div class="your-card">
           <div class="rank">{{ simulateRank || '—' }}</div>
@@ -56,15 +56,15 @@
 </template>
 
 <script setup>
-import { getAll } from '../../../api/leaderboard'
+import { getAll } from '../../../apiss/leaderboard'
 const auth = useAuth()
 const top50 = ref([])
- const { referralPoints } = referralCompletedPoints()
+const { referralPoints } = referralCompletedPoints()
 
 
-onMounted(async() => {
+onMounted(async () => {
   top50.value = await getAll() || []
-    
+
   if (top50.value.length > 50) {
     top50.value = top50.value.slice(0, 50);
   }
@@ -72,19 +72,19 @@ onMounted(async() => {
 
 watch(() => auth.value.points, () => {
 
-    console.log("leaderboard", formatList.value)
+  console.log("leaderboard", formatList.value)
 
 
-    // const leatRank = formatList.value[formatList.value.length-1];
-    // if (auth.value.points> leatRank.points) top50.value.push({
-    //   points: auth.value.points,
-    //   username: auth.value.username,
-    //   walletAddress: auth.value.walletAddress
-    // })
+  // const leatRank = formatList.value[formatList.value.length-1];
+  // if (auth.value.points> leatRank.points) top50.value.push({
+  //   points: auth.value.points,
+  //   username: auth.value.username,
+  //   walletAddress: auth.value.walletAddress
+  // })
 })
 
 const formatList = computed(() => {
-    return top50.value.sort((a, b) => b.points - a.points);
+  return top50.value.sort((a, b) => b.points - a.points);
 })
 
 const currentUserRank = ref(null)
@@ -108,11 +108,11 @@ const simulateRank = computed(() => {
   const baseRank = 384; // starting simulated rank for low points
 
   // Normalize points to [0,1]
-  const progress = Math.min((auth.value.points+referralPoints.value) / maxPoints, 1);
-  
+  const progress = Math.min((auth.value.points + referralPoints.value) / maxPoints, 1);
+
   // Calculate rank: more points -> closer to top 50
   const simulatedRank = Math.round(baseRank - (baseRank - 51) * progress);
-  
+
   console.log("simulatedRank", simulatedRank)
   return simulatedRank;
 })
@@ -126,46 +126,137 @@ const simulateRank = computed(() => {
   min-height: 100vh;
 }
 
-.container { max-width:1100px; margin:0 auto; padding:24px; }
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px;
+}
 
-header { display:flex; align-items:center; gap:14px; margin-bottom:18px; }
-.uht-mark { display:flex; align-items:center; gap:12px; }
-.uht-mark img { width:56px; height:56px; }
-.brand-title { font-weight:800; font-size:clamp(24px,3vw,32px); }
-.badge { padding:6px 10px; border-radius:999px;
-  background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.18);
-  backdrop-filter: blur(6px); }
+header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+}
 
-.leaderboard h1 { font-size:28px; margin-bottom:16px; }
+.uht-mark {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
 
-.leaderboard ul { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:10px; }
+.uht-mark img {
+  width: 56px;
+  height: 56px;
+}
+
+.brand-title {
+  font-weight: 800;
+  font-size: clamp(24px, 3vw, 32px);
+}
+
+.badge {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .12);
+  border: 1px solid rgba(255, 255, 255, .18);
+  backdrop-filter: blur(6px);
+}
+
+.leaderboard h1 {
+  font-size: 28px;
+  margin-bottom: 16px;
+}
+
+.leaderboard ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 
 .leaderboard li {
-  display:flex; justify-content:space-between; align-items:center;
-  background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18);
-  border-radius:14px; padding:12px 18px; font-weight:600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, .08);
+  border: 1px solid rgba(255, 255, 255, .18);
+  border-radius: 14px;
+  padding: 12px 18px;
+  font-weight: 600;
   transition: transform .1s ease;
 }
-.leaderboard li:hover { transform: scale(1.02); }
 
-.rank { font-size:18px; font-weight:700; width:40px; text-align:center; }
-.user { flex:1; text-align:left; padding-left:12px; }
-.points { font-weight:800; }
+.leaderboard li:hover {
+  transform: scale(1.02);
+}
 
-.medal { font-size:22px; }
-.gold { color: gold; text-shadow:0 0 8px gold; }
-.silver { color: silver; text-shadow:0 0 8px silver; }
-.bronze { color: #cd7f32; text-shadow:0 0 8px #cd7f32; }
+.rank {
+  font-size: 18px;
+  font-weight: 700;
+  width: 40px;
+  text-align: center;
+}
 
-.first { background:linear-gradient(90deg,#ffd70033,#fff20022); }
-.second { background:linear-gradient(90deg,#c0c0c033,#e0e0e022); }
-.third { background:linear-gradient(90deg,#cd7f3233,#ffb34722); }
+.user {
+  flex: 1;
+  text-align: left;
+  padding-left: 12px;
+}
 
-.your-rank { margin-top:40px; }
-.your-rank h2 { font-size:22px; margin-bottom:12px; }
+.points {
+  font-weight: 800;
+}
+
+.medal {
+  font-size: 22px;
+}
+
+.gold {
+  color: gold;
+  text-shadow: 0 0 8px gold;
+}
+
+.silver {
+  color: silver;
+  text-shadow: 0 0 8px silver;
+}
+
+.bronze {
+  color: #cd7f32;
+  text-shadow: 0 0 8px #cd7f32;
+}
+
+.first {
+  background: linear-gradient(90deg, #ffd70033, #fff20022);
+}
+
+.second {
+  background: linear-gradient(90deg, #c0c0c033, #e0e0e022);
+}
+
+.third {
+  background: linear-gradient(90deg, #cd7f3233, #ffb34722);
+}
+
+.your-rank {
+  margin-top: 40px;
+}
+
+.your-rank h2 {
+  font-size: 22px;
+  margin-bottom: 12px;
+}
+
 .your-card {
-  display:flex; justify-content:space-between; align-items:center;
-  background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.18);
-  border-radius:16px; padding:14px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, .12);
+  border: 1px solid rgba(255, 255, 255, .18);
+  border-radius: 16px;
+  padding: 14px 20px;
 }
 </style>

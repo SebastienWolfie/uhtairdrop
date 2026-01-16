@@ -6,7 +6,7 @@
       <header>
         <div class="uht-mark">
           <img src="/images/uht-jar.jpg" alt="UHT Logo"
-               onerror="this.src='https://dummyimage.com/96x96/6a44ff/ffffff&text=UHT'"/>
+            onerror="this.src='https://dummyimage.com/96x96/6a44ff/ffffff&text=UHT'" />
           <div>
             <div class="brand-title">Daily Mint • UHT Faucet</div>
             <span class="badge"><small>24h cycle • Dynamic cap • Withdraw when full</small></span>
@@ -49,12 +49,8 @@
 
             <!-- Withdraw / Minting button -->
             <div class="mt-6">
-              <button
-                class="btn btn-primary w-full"
-                :class="{ 'opacity-60 cursor-not-allowed': !canWithdraw }"
-                :disabled="!canWithdraw || withdrawLoading"
-                @click="withdraw"
-              >
+              <button class="btn btn-primary w-full" :class="{ 'opacity-60 cursor-not-allowed': !canWithdraw }"
+                :disabled="!canWithdraw || withdrawLoading" @click="withdraw">
                 <span v-if="withdrawLoading">Processing...</span>
                 <span v-else>
                   {{ buttonText }}
@@ -85,9 +81,9 @@
 </template>
 
 <script setup>
-import { mintTokens } from '~/api/web3/uhtdex';
-import { getAllNominatedByAddress } from '../../../api/nominations';
-import { updateUser } from '../../../api/profile'
+import { mintTokens } from '~/apiss/web3/uhtdex';
+import { getAllNominatedByAddress } from '../../../apiss/nominations';
+import { updateUser } from '../../../apiss/profile'
 
 
 const auth = useAuth() // expects your global auth composable
@@ -97,7 +93,7 @@ const { referralPoints } = referralCompletedPoints() // keep for reference if ne
 const BASE_CAP = 50                       // base daily cap in UHT
 const PER_NOMINATION_BONUS = 50            // each nomination (hash unit) adds this much UHT
 const MS_PER_DAY = 24 * 60 * 60 * 1000    // 24 * 60 * 60 * 1000 = 86400000 (explicit digit-by-digit)
-                                          // (24 hours * 60 minutes * 60 seconds * 1000 ms)
+// (24 hours * 60 minutes * 60 seconds * 1000 ms)
 
 // === reactive state ===
 const hashRate = ref(0)                   // number of nominations.
@@ -109,12 +105,12 @@ let tickInterval = null
 
 
 
-watch(()=> [auth.value.walletAddress,auth.value.lastDailyClaimAt], async() => {
-    initialize()
+watch(() => [auth.value.walletAddress, auth.value.lastDailyClaimAt], async () => {
+  initialize()
 })
 
-onMounted(async() => {
-    initialize()
+onMounted(async () => {
+  initialize()
 })
 // init: load lastWithdraw from auth or localStorage (so UI is testable without backend)
 async function initialize() {
@@ -188,7 +184,7 @@ const timeRemainingLabel = computed(() => {
 
 
 // Withdraw: reset cycle, persist timestamp, call backend or contract code here
-async function withdraw () {
+async function withdraw() {
   if (!canWithdraw.value || withdrawLoading.value) return
   withdrawLoading.value = true
 
@@ -221,63 +217,208 @@ async function withdraw () {
 </script>
 
 <style scoped>
-:root{
-  --brand:#6a44ff;          /* UHT purple base */
-  --stroke:rgba(255,255,255,.18);
-  --glass:rgba(255,255,255,.08);
-  --text:#f3f4f8;
-  --ok:#31d0aa;
+:root {
+  --brand: #6a44ff;
+  /* UHT purple base */
+  --stroke: rgba(255, 255, 255, .18);
+  --glass: rgba(255, 255, 255, .08);
+  --text: #f3f4f8;
+  --ok: #31d0aa;
 }
 
 /* Re-using your page styles so the new page matches site look-and-feel */
-*{box-sizing:border-box}
-.body{
-  margin:0;
-  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif;
-  color:var(--text);
+* {
+  box-sizing: border-box
+}
+
+.body {
+  margin: 0;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  color: var(--text);
   background:
     radial-gradient(90rem 60rem at 80% -10%, #a88bff20 10%, transparent 60%),
     radial-gradient(80rem 60rem at -10% 100%, #5436ff33 5%, transparent 60%),
     linear-gradient(180deg, #5b32ff 0%, #6a44ff 50%, #5a3df6 100%);
-  min-height:100svh;
+  min-height: 100svh;
   color: white;
 }
-.container{max-width:1100px;margin:0 auto;padding:24px}
-header{display:flex;align-items:center;gap:14px;margin-bottom:18px}
-.uht-mark{display:flex;align-items:center;gap:12px}
-.uht-mark img{width:56px;height:56px;object-fit:contain;filter: drop-shadow(0 6px 12px rgba(0,0,0,.25))}
-.brand-title{font-weight:800;font-size:clamp(20px,3vw,28px)}
-.badge{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid var(--stroke);backdrop-filter: blur(6px)}
-.badge small{opacity:.9}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px
+}
+
+header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px
+}
+
+.uht-mark {
+  display: flex;
+  align-items: center;
+  gap: 12px
+}
+
+.uht-mark img {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, .25))
+}
+
+.brand-title {
+  font-weight: 800;
+  font-size: clamp(20px, 3vw, 28px)
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .12);
+  border: 1px solid var(--stroke);
+  backdrop-filter: blur(6px)
+}
+
+.badge small {
+  opacity: .9
+}
 
 /* hero & card */
-.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:28px;align-items:start;margin-top:8px}
-@media (max-width:900px){.hero{grid-template-columns:1fr}}
-.hero-card{background:var(--glass);border:1px solid var(--stroke);border-radius:22px;padding:28px;backdrop-filter: blur(8px);box-shadow:0 20px 50px rgba(0,0,0,.25)}
-h1{margin:0 0 10px;font-size:clamp(26px,4vw,36px);line-height:1.02}
-.lead{font-size:clamp(14px,2vw,16px);opacity:.95}
-.keyline{height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);margin:18px 0}
+.hero {
+  display: grid;
+  grid-template-columns: 1.1fr .9fr;
+  gap: 28px;
+  align-items: start;
+  margin-top: 8px
+}
+
+@media (max-width:900px) {
+  .hero {
+    grid-template-columns: 1fr
+  }
+}
+
+.hero-card {
+  background: var(--glass);
+  border: 1px solid var(--stroke);
+  border-radius: 22px;
+  padding: 28px;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, .25)
+}
+
+h1 {
+  margin: 0 0 10px;
+  font-size: clamp(26px, 4vw, 36px);
+  line-height: 1.02
+}
+
+.lead {
+  font-size: clamp(14px, 2vw, 16px);
+  opacity: .95
+}
+
+.keyline {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .3), transparent);
+  margin: 18px 0
+}
 
 /* progress meta */
-.progress-meta{display:flex;justify-content:space-between;align-items:center;gap:10px}
-.progress-meta .label{opacity:.8;font-size:12px}
-.progress-meta .num{font-weight:800;font-size:22px}
+.progress-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px
+}
+
+.progress-meta .label {
+  opacity: .8;
+  font-size: 12px
+}
+
+.progress-meta .num {
+  font-weight: 800;
+  font-size: 22px
+}
 
 /* progress bar */
-.progress-wrap{width:100%}
-.progress-bg{width:100%;height:14px;background:rgba(255,255,255,.06);border-radius:999px;overflow:hidden;border:1px solid var(--stroke)}
-.progress-fill{height:100%;background:linear-gradient(90deg,#ffd6ff,#d9e0ff);transition:width 0.4s cubic-bezier(.2,.8,.2,1)}
+.progress-wrap {
+  width: 100%
+}
+
+.progress-bg {
+  width: 100%;
+  height: 14px;
+  background: rgba(255, 255, 255, .06);
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid var(--stroke)
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ffd6ff, #d9e0ff);
+  transition: width 0.4s cubic-bezier(.2, .8, .2, 1)
+}
 
 /* button */
-.btn{appearance:none;cursor:pointer;padding:12px 18px;border-radius:14px;font-weight:700;letter-spacing:.2px;transition:transform .08s ease, box-shadow .2s ease, background .2s ease}
-.btn-primary{background:#fff;color:#3e2cff;box-shadow:0 10px 20px rgba(0,0,0,.20), 0 0 0 2px rgba(255,255,255,.12) inset}
-.btn-primary:disabled{opacity:.6;cursor:not-allowed}
+.btn {
+  appearance: none;
+  cursor: pointer;
+  padding: 12px 18px;
+  border-radius: 14px;
+  font-weight: 700;
+  letter-spacing: .2px;
+  transition: transform .08s ease, box-shadow .2s ease, background .2s ease
+}
+
+.btn-primary {
+  background: #fff;
+  color: #3e2cff;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, .20), 0 0 0 2px rgba(255, 255, 255, .12) inset
+}
+
+.btn-primary:disabled {
+  opacity: .6;
+  cursor: not-allowed
+}
 
 /* jar */
-.jar-wrap{display:flex;justify-content:center;align-items:center}
-.jar{width:min(360px, 88%);aspect-ratio:1/1;border-radius:24px;background:linear-gradient(180deg,#8d6bff22 0%, #ffffff10 100%);display:grid;place-items:center;padding:18px;border:1px solid var(--stroke)}
-.jar img{width:100%;height:100%;object-fit:contain}
+.jar-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center
+}
+
+.jar {
+  width: min(360px, 88%);
+  aspect-ratio: 1/1;
+  border-radius: 24px;
+  background: linear-gradient(180deg, #8d6bff22 0%, #ffffff10 100%);
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  border: 1px solid var(--stroke)
+}
+
+.jar img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain
+}
 
 /* footer */
-footer{opacity:.8;margin:28px 0 10px;font-size:12px;text-align:center}
+footer {
+  opacity: .8;
+  margin: 28px 0 10px;
+  font-size: 12px;
+  text-align: center
+}
 </style>

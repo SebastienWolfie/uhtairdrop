@@ -11,20 +11,29 @@
 
             <div class="md:px-[10%] px-[2%] h-fit pt-[130px] md:pt-[180px] flex flex-col items-center md:items-start justify-center md:w-[55%]"
                 id="home">
-                <p class="text-[18px] md:text-[18px] font-semibold">UHT turns healthy living into real rewards. By blending blockchain and wellness, we give people everywhere the chance to earn while building a healthier world. With UHT, your lifestyle is your wealth.</p>
-                
-                <p class="mt-4 text-[#7C58F2] font-extrabold text-[25px] leading-[30px] md:text-[35px] md:leading-[40px]">UHT
+                <p class="text-[18px] md:text-[18px] font-semibold">UHT turns healthy living into real rewards. By
+                    blending blockchain and wellness, we give people everywhere the chance to earn while building a
+                    healthier world. With UHT, your lifestyle is your wealth.</p>
+
+                <p
+                    class="mt-4 text-[#7C58F2] font-extrabold text-[25px] leading-[30px] md:text-[35px] md:leading-[40px]">
+                    UHT
                     Reward cycle</p>
                 <p class="text-[#7C58F2] font-extrabold text-[25px] leading-[30px] md:text-[35px] md:leading-[40px]">
                     Season 2.</p>
 
-                <p class="mt-4 text-[18px] md:text-[18px] font-semibold">Season 2 is open to the entire community,  no ICO required. This is the final pre-launch stage, designed to welcome everyone before we go live.</p>
+                <p class="mt-4 text-[18px] md:text-[18px] font-semibold">Season 2 is open to the entire community, no
+                    ICO required. This is the final pre-launch stage, designed to welcome everyone before we go live.
+                </p>
 
                 <ul class="mt-1 font-semibold">
-                    <li><b>Inclusive Rewards</b> – Whether you’re new or returning, everyone starts fresh in Season 2.</li>
+                    <li><b>Inclusive Rewards</b> – Whether you’re new or returning, everyone starts fresh in Season 2.
+                    </li>
                     <li><b>Treasure Hunt Experience</b> – Join fun challenges and earn UHT multipliers.</li>
-                    <li><b>Final Airdrop Schedule</b> – The last distribution happens just before launch, securing your tokens ahead of mainnet.</li>
-                    <li><b>Tiered Bonuses</b> – Early sign-ups and the most active community members get boosted allocations.</li>
+                    <li><b>Final Airdrop Schedule</b> – The last distribution happens just before launch, securing your
+                        tokens ahead of mainnet.</li>
+                    <li><b>Tiered Bonuses</b> – Early sign-ups and the most active community members get boosted
+                        allocations.</li>
                 </ul>
 
                 <div class="flex items-center mt-6">
@@ -402,9 +411,9 @@
 
 <script setup>
 import { getWindowDimensions } from '../../utils/Dimensions'
-import { getIsConnected, getProvider, openModal, getAddress, subscribeState, getChainID, disconnectWallet } from '../../api/web3/walletconnect';
-import { getBalance as getUHTBalance } from '../../api/web3/uht'
-import { create as saveClaimedAddress, getAll as getAllClaimedAddresses } from '../../api/claim'
+import { getIsConnected, getProvider, openModal, getAddress, subscribeState, getChainID, disconnectWallet } from '../../apiss/web3/walletconnect';
+import { getBalance as getUHTBalance } from '../../apiss/web3/uht'
+import { create as saveClaimedAddress, getAll as getAllClaimedAddresses } from '../../apiss/claim'
 
 const auth = useAuth()
 const showClaimModal = ref(false)
@@ -490,19 +499,19 @@ function disconnectClicked() {
 }
 
 
-    onMounted(() => {
-        isWalletConnected.value = getIsConnected();
-        walletAddress.value = getAddress();
-    })
+onMounted(() => {
+    isWalletConnected.value = getIsConnected();
+    walletAddress.value = getAddress();
+})
 
 
 
-    watch(() => auth.value.walletAddress, () => {
-        console.log("connectaddress: ", walletAddress.value)
+watch(() => auth.value.walletAddress, () => {
+    console.log("connectaddress: ", walletAddress.value)
 
-        walletAddress.value = auth.value.walletAddress;
-        isWalletConnected.value = auth.value.isWalletConnected
-    })
+    walletAddress.value = auth.value.walletAddress;
+    isWalletConnected.value = auth.value.isWalletConnected
+})
 
 
 watch(() => isWalletConnected.value, () => {
