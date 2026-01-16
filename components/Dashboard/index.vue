@@ -78,8 +78,7 @@
         <div class="panel question">
           <h3>Question of the day</h3>
           <div id="qWrap">
-            <p id="questionTxt">{{ (dailyQuestion?.id) ? dailyQuestion?.question : 'No question available to answer at
-              the moment.Check back later today.' }}</p>
+            <p id="questionTxt">{{ (dailyQuestion?.id) ? dailyQuestion?.question : 'No question available to answer at the moment.Check back later today.' }}</p>
             <div class="flex flex-wrap gap-[10px] mt-3" v-if="dailyQuestion?.id != auth?.lastAnsweredQuestionID">
               <button class="btn btn-ghost" v-for="(option, index) in dailyQuestion?.options"
                 :class="{ '!border-[2px] !border-gray-400': (myAnswerID == option?.id) }" @click="() => {
