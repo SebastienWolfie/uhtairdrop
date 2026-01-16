@@ -473,7 +473,7 @@ const newEraHealthcareList = ref([
     },
 
 ])
-const { width } = getWindowDimensions();
+const width = ref(1200);
 
 function tabClicked(newLink) {
     document.getElementById(newLink).scrollIntoView({
@@ -500,6 +500,18 @@ function disconnectClicked() {
 
 
 onMounted(() => {
+    // This code only runs in the browser
+    const dimensions = getWindowDimensions();
+    if (dimensions) {
+        width.value = dimensions.width;
+    }
+
+    // Optional: Update width on window resize
+    window.addEventListener('resize', () => {
+        width.value = window.innerWidth;
+    });
+
+    
     isWalletConnected.value = getIsConnected();
     walletAddress.value = getAddress();
 })
