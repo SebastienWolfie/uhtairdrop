@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
     }
 
     // --- VARIABLES ---
-    const baseUrl = "https://uht-airdrop-link.com";
+    const baseUrl = "https://www.uhtcrypto.xyz/";
     const uhtLink = `${baseUrl}/dashboard/${id}`; // Personalized link using the ID
     const supportEmail = "info@polywhaler.net";
     const brandName = "UHT Rewards";

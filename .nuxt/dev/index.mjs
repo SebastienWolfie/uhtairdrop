@@ -1064,7 +1064,7 @@ const sendWelcome_post = defineEventHandler(async (event) => {
     if (!email || !nickname) {
       throw createError({ statusCode: 400, message: "Missing email or nickname" });
     }
-    const baseUrl = "https://uht-airdrop-link.com";
+    const baseUrl = "https://www.uhtcrypto.xyz/";
     const uhtLink = `${baseUrl}/dashboard/${id}`;
     const supportEmail = "info@polywhaler.net";
     const brandName = "UHT Rewards";
