@@ -4,9 +4,14 @@
 export default defineNuxtConfig({
   css: [
     "~/assets/css/tailwind.css",
-    "~/Layouts/global.css"
+    "~/layouts/global.css"
   ],
   modules: ["@nuxtjs/tailwindcss", "nuxt-icon"],
-  ssr: false,
-  plugins: [{ src: "@/plugins/aos", ssr: false, mode: "client" }]
+  plugins: [{ src: "@/plugins/aos", ssr: false, mode: "client" }],
+  nitro: {
+    preset: 'vercel'
+  },
+  routeRules: {
+    '/api/**': { cache: false } 
+  }
 });
