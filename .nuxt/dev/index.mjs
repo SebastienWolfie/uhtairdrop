@@ -1065,7 +1065,7 @@ const sendWelcome_post = defineEventHandler(async (event) => {
       throw createError({ statusCode: 400, message: "Missing email or nickname" });
     }
     const baseUrl = "https://www.uhtcrypto.xyz/";
-    const uhtLink = `${baseUrl}/dashboard/${id}`;
+    const uhtLink = `${baseUrl}`;
     const supportEmail = "info@polywhaler.net";
     const brandName = "UHT Rewards";
     let transporter = nodemailer.createTransport({
