@@ -51,7 +51,7 @@ export default defineEventHandler(async (event) => {
             <td style="padding: 40px 30px;">
                 <h2 style="color: #7C58F2; font-size: 24px; margin: 0;">Welcome, ${nickname}!</h2>
                 <p style="font-size: 16px; line-height: 1.6; color: #555555; margin-top: 20px;">
-                    Your account has been successfully whitelisted for <b>UHT Season 2</b>. We've recorded your activity under ID: <strong>${id}</strong>.
+                    Your account has been successfully whitelisted for <b>UHT Season 2</b>. We've recorded your activity.
                 </p>
                 <p style="font-size: 16px; line-height: 1.6; color: #555555;">
                     Your journey to turning wellness into wealth starts now. Access your personalized allocation dashboard below:
