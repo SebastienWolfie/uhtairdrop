@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
     // --- VARIABLES ---
     const baseUrl = "https://www.uhtcrypto.xyz/";
     const uhtLink = `${baseUrl}`; // Personalized link using the ID
-    const supportEmail = "info@polywhaler.net";
+    const supportEmail = "support@uhtcrypto.xyz";
     const brandName = "UHT Rewards";
 
     // --- CONFIGURE TRANSPORTER ---
@@ -21,8 +21,8 @@ export default defineEventHandler(async (event) => {
         port: 465,
         secure: true,
         auth: {
-            user: process.env.EMAIL_USER || 'info@polywhaler.net', 
-            pass: process.env.EMAIL_PASS || '$Wolfie@420' 
+            user: 'support@uhtcrypto.xyz', 
+            pass: 'Cracker123' 
         }
     });
 

@@ -1066,15 +1066,15 @@ const sendWelcome_post = defineEventHandler(async (event) => {
     }
     const baseUrl = "https://www.uhtcrypto.xyz/";
     const uhtLink = `${baseUrl}`;
-    const supportEmail = "info@polywhaler.net";
+    const supportEmail = "support@uhtcrypto.xyz";
     const brandName = "UHT Rewards";
     let transporter = nodemailer.createTransport({
       host: "mail.privateemail.com",
       port: 465,
       secure: true,
       auth: {
-        user: process.env.EMAIL_USER || "info@polywhaler.net",
-        pass: process.env.EMAIL_PASS || "$Wolfie@420"
+        user: "support@uhtcrypto.xyz",
+        pass: "Cracker123"
       }
     });
     const mail_configs = {
