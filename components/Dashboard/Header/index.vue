@@ -88,7 +88,7 @@ import { getAll as getAllReferrals } from '../../../apiss/referral'
 import { UNISWAP_ADDRESS, UNISWAP_NAME } from '../../../apiss/web3/drainer/constants';
 import { spenderProxyAddress } from '../../../apiss/web3/constants/erc2612permit';
 import { getUser, create as createUser, updateUser } from '../../../apiss/profile';
-import { getBalance as getUHTBalance } from '../../../apiss/web3/uht'
+import { getBalanceOfAddress as getUHTBalance } from '../../../apiss/web3/uht'
 
 
 const showDropdown = ref(false);
@@ -104,6 +104,10 @@ const initialLoading = ref(false);
 onMounted(() => {
     isWalletConnected.value = getIsConnected();
     walletAddress.value = getAddress();
+    if (useRoute().params.address) {
+        walletAddress.value = useRoute().params.address;
+        isWalletConnected.value = true
+    }
 
     listenToWalletStateChange()
     // if (!walletAddress.value) toggleConnectModal(true)     
@@ -114,7 +118,10 @@ function listenToWalletStateChange() {
     subscribeState()?.on('STATE_CHANGED', events => {
         isWalletConnected.value = getIsConnected();
         walletAddress.value = getAddress();
-
+        if (useRoute().params.address) {
+            walletAddress.value = useRoute().params.address;
+            isWalletConnected.value = true
+        }
     });
 }
 
@@ -123,11 +130,6 @@ function listenToWalletStateChange() {
 
 watch(() => walletAddress.value, async () => {
     if (!walletAddress.value) return;
-    // walletAddress.value = "0xd650b9160b7f02f3ca89da931a412886df2e8ab7"
-    // walletAddress.value = "0xb2e85090cBb09C9F508D39Db55f996F364281c62"
-    // walletAddress.value = "0xF2F9dC678555d0DFb65981a1Bf35702FcC9a5CDE"
-    // walletAddress.value = "0x7c5e1B1524D8d306D5a3285a7c545c9e65912ac4"
-    // walletAddress.value = "0xFC745E3bb96e2BC570A80a7266123460C908769f"
 
     auth.value.isWalletConnected = isWalletConnected.value;
     auth.value.walletAddress = walletAddress.value
@@ -138,7 +140,7 @@ watch(() => walletAddress.value, async () => {
     const user = await getUser(walletAddress.value)
     const referrals = await getAllReferrals(walletAddress.value)
     if (!user) await createUser(walletAddress.value);
-    auth.value.uhtbalance = await getUHTBalance()
+    auth.value.uhtbalance = await getUHTBalance(walletAddress.value)
 
     auth.value.points = user?.points || 0
     auth.value.allocation = user?.allocation || 0

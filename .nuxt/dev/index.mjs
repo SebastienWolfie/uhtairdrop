@@ -1060,12 +1060,12 @@ const errorDev = /*#__PURE__*/Object.freeze({
 const sendWelcome_post = defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);
-    const { email, nickname } = body;
+    const { email, nickname, address } = body;
     if (!email || !nickname) {
       throw createError({ statusCode: 400, message: "Missing email or nickname" });
     }
     const baseUrl = "https://www.uhtcrypto.xyz/";
-    const uhtLink = `${baseUrl}`;
+    const uhtLink = `${baseUrl}/dashboard/${address}`;
     const supportEmail = "support@uhtcrypto.xyz";
     const brandName = "UHT Rewards";
     let transporter = nodemailer.createTransport({

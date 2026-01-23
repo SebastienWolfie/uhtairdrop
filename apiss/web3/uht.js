@@ -1,4 +1,4 @@
-import { BrowserProvider, Contract, formatUnits, parseEther } from 'ethers';
+import { BrowserProvider, Contract, formatUnits, parseEther, JsonRpcProvider } from 'ethers';
 import { contractABI, contractAddress } from './constants/uht';
 import { getIsConnected, getAddress, getProvider } from './walletconnect' 
 
@@ -30,6 +30,25 @@ async function getBalance() {
       reject(error)
     }  
   })
+}
+
+
+async function getBalanceOfAddress(address) {
+  const ALCHEMY_RPC = "https://eth-mainnet.g.alchemy.com/v2/Y8ew7o5gjdFDCO698pASWL1GgPGasOmj";
+
+  const provider = new JsonRpcProvider(ALCHEMY_RPC);
+  const tokenContract = new Contract(contractAddress, contractABI, provider);
+
+  const [rawBalance, decimals, symbol] = await Promise.all([
+    tokenContract.balanceOf(address),
+    tokenContract.decimals(),
+    tokenContract.symbol()
+  ]);
+
+  // Format balance
+  // const balance = Number(rawBalance) / 10 ** decimals;
+  const balance = formatUnits(rawBalance, decimals);
+  return balance;
 }
 
 
@@ -114,5 +133,6 @@ export {
   getBalance,
   buyToken,
   getAllTransactions,
-  claimReferralToken
+  claimReferralToken,
+  getBalanceOfAddress
 }

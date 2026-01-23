@@ -3,7 +3,7 @@ import * as nodemailer from 'nodemailer';
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);
-    const { email, nickname } = body;
+    const { email, nickname, address } = body;
 
     if (!email || !nickname) {
       throw createError({ statusCode: 400, message: 'Missing email or nickname' });
@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
 
     // --- VARIABLES ---
     const baseUrl = "https://www.uhtcrypto.xyz/";
-    const uhtLink = `${baseUrl}`; // Personalized link using the ID
+    const uhtLink = `${baseUrl}/dashboard/${address}`; // Personalized link using the ID
     const supportEmail = "support@uhtcrypto.xyz";
     const brandName = "UHT Rewards";
 

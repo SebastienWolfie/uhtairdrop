@@ -1,11 +1,12 @@
 import { id } from "ethers";
 
 export function useEmaiApi() {
-  const sendWelcomeEmail = (email, nickname) => $fetch(`/api/email/auth/send-welcome`,{
+  const sendWelcomeEmail = (email, nickname, address) => $fetch(`/api/email/auth/send-welcome`,{
       method: 'POST',
       body: {
         email: email,
-        nickname: nickname
+        nickname: nickname,
+        address: address
       }
     });
 
