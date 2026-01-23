@@ -29,6 +29,7 @@ export { injectHead, useHead, useSeoMeta, useHeadSafe, useServerHead, useServerS
 export { default as eventBus } from '../composables/eventBus';
 export { referralCompletedPoints } from '../composables/referralCompletedPoints';
 export { useAuth } from '../composables/states';
+export { useEmaiApi } from '../composables/useEmaiApi';
 export { default as Date } from '../utils/Date';
 export { getWindowDimensions } from '../utils/Dimensions';
 export { purifyNumber, purifyDecimal } from '../utils/DomPurify';

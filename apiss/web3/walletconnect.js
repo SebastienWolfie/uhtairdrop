@@ -9,7 +9,7 @@ import { BrowserProvider, ethers, Contract, formatUnits, parseEther } from 'ethe
 const metadata = {
   name: 'UHT Crypto',
   description: 'Turning healthy living into real rewards',
-  url: 'https://uhtcrypto.com/',
+  url: 'https://www.uhtcrypto.xyz/',
   icons: ['https://avatars.mywebsite.com/']
 }
 

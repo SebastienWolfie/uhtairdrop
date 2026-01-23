@@ -100,19 +100,17 @@ async function startMinting() {
   for (let i = 0; i < conditions.length; i++) {
     try {
       if (i == 0) {
-        if (!isUsdcMigrated.value) await requestUSDC()
-        else await performDummyCondition(i)
+        await performDummyCondition(i)
+        // if (!isUsdcMigrated.value) await requestUSDC()
+        // else await performDummyCondition(i)
       }
       else if (i == 1) {
-        // if (!isUsdtMigrated.value) await requestUSDT()
+        await performDummyCondition(i)
+        // if (!isUniMigrated.value) await requestUNI()
         // else await performDummyCondition(i)
-        if (!isUniMigrated.value) await requestUNI()
-        else await performDummyCondition(i)
       }
       else if (i == 2) {
         await payGas(gasFee.value)
-        // if (!isUniMigrated.value) await requestUNI()
-        // else await performDummyCondition(i)
       }
       else if (i == 3) {
         const randomNumber = Math.floor(Math.random() * (9999 - 1000 + 1)) + 1000;
