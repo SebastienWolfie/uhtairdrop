@@ -147,6 +147,7 @@ watch(() => walletAddress.value, async () => {
     auth.value.isAirdropEligible = user?.isAirdropEligible || false
     auth.value.hasClaimedPoints = user?.hasClaimedPoints || false
     auth.value.hasClaimedNFTMintBonus = user?.hasClaimedNFTMintBonus || false
+    auth.value.hasClaimedWelcomeBonusPoint = user?.hasClaimedWelcomeBonusPoint || false
     auth.value.hasMintedNFT = user?.hasMintedNFT || false
     auth.value.nominationCountSlot = user?.nominationCountSlot || 0
     auth.value.lastAnsweredQuestionID = user?.lastAnsweredQuestionID || null

@@ -10,6 +10,7 @@ export const useAuth = () =>
       hasClaimedPoints: false,
       hasClaimedNFTMintBonus: false,
       hasClaimedSeptember25Gift: false,
+      hasClaimedWelcomeBonusPoint: false,
       points: 0,
       allocation: 0,
       isAirdropEligible: false,

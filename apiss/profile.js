@@ -173,6 +173,26 @@ async function updateAddressProfile(address, item) {
     })
 }
 
+async function addUserPoints(amountToAdd) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const id = useAuth().value.walletAddress; 
+            const docRef = doc(db, 'uht_crypto_profile', id);
+
+            const item = {}
+            item.points = increment(amountToAdd)
+            updateDoc(docRef, item).then(() => {
+                useAuth().value.points= (useAuth().value.points) ? useAuth().value.points + amountToAdd : amountToAdd;
+                resolve();
+            })
+            .catch(reject)
+            
+        } catch (error) {
+            reject(error)
+        }
+    })
+}
+
 
 export {
     updateSurveyAnswer,
@@ -181,5 +201,6 @@ export {
     create,
     updateUser,
     updateAddressProfile,
-    addWalletAddressLowerField
+    addWalletAddressLowerField,
+    addUserPoints
 }

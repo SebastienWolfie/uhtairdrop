@@ -187,6 +187,7 @@ import { doc, updateDoc } from "firebase/firestore";
 import { list as nftList } from "~/apiss/NftDatabase";
 import { getVotedNFT, create as saveVotedNFT } from '../../../apiss/nftvoting';
 
+
 const auth = useAuth();
 
 /* ========== STAKING ========== */

