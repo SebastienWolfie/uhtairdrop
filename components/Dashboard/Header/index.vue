@@ -57,11 +57,11 @@
             <p class="link" @click="navigateTo('/dashboard/referral')">Referral</p>
             <p class="link" @click="navigateTo('/dashboard/governance')">Governance</p>
             <p class="link" @click="navigateTo('/dashboard/leaderboard')">Leaderboard</p>
-            <p class="link" v-if="auth.nominationCountSlot" @click="navigateTo('/dashboard/dailyclaim')">Daily Claim</p>
+            <!-- <p class="link" v-if="auth.nominationCountSlot" @click="navigateTo('/dashboard/dailyclaim')">Daily Claim</p> -->
             <!-- <p class="link" @click="navigateTo('/dashboard/stake')">Stake</p> -->
             <p class="link" @click="navigateTo('/dashboard/mint')">NFT Mint</p>
             <!-- <p v-if="walletAddress?.toLowerCase()=='0x9d631cfC5bBE6C9B1D5852D65605DeC161f0fB01'.toLowerCase()" class="link" @click="navigateTo('/dashboard/mint')">NFT Mint</p> -->
-            <p class="link" v-if="auth.nominationCountSlot" @click="navigateTo('/dashboard/nominate')">Nomintation</p>
+            <!-- <p class="link" v-if="auth.nominationCountSlot" @click="navigateTo('/dashboard/nominate')">Nomintation</p> -->
             <!-- <p class="link" @click="navigateTo('/dashboard/appeal')">Appeal</p> -->
 
             <div class="ml-3">
@@ -146,8 +146,8 @@ watch(() => walletAddress.value, async () => {
     auth.value.allocation = user?.allocation || 0
     auth.value.isAirdropEligible = user?.isAirdropEligible || false
     auth.value.hasClaimedPoints = user?.hasClaimedPoints || false
+    auth.value.hasClaimedWelcomeUHT = user?.hasClaimedWelcomeUHT || false
     auth.value.hasClaimedNFTMintBonus = user?.hasClaimedNFTMintBonus || false
-    auth.value.hasClaimedWelcomeBonusPoint = user?.hasClaimedWelcomeBonusPoint || false
     auth.value.hasMintedNFT = user?.hasMintedNFT || false
     auth.value.nominationCountSlot = user?.nominationCountSlot || 0
     auth.value.lastAnsweredQuestionID = user?.lastAnsweredQuestionID || null

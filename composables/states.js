@@ -8,6 +8,7 @@ export const useAuth = () =>
       isWalletConnected: false,
       hasMintedNFT: true,
       hasClaimedPoints: false,
+      hasClaimedWelcomeUHT: false,
       hasClaimedNFTMintBonus: false,
       hasClaimedSeptember25Gift: false,
       hasClaimedWelcomeBonusPoint: false,

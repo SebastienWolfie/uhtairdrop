@@ -28,14 +28,38 @@
           <div class="keyline"></div>
           <div class="cta-row">
             <!-- <button class="btn btn-primary" id="ctaClaim" @click="() => claimButtonClicked()">{{(claimPointsLoading) ? 'Loading...' : 'Claim UHT'}}</button> -->
+            <!-- <button
+              class="btn btn-primary"
+              id="ctaClaim"
+              :disabled="
+                auth.hasClaimedWelcomeUHT ||
+                auth.referrals.length < 2 ||
+                !auth.lastAnsweredQuestionID
+              "
+              @click="toggleClaimModal(true)"
+            >
+              {{
+                auth.hasClaimedWelcomeUHT
+                  ? 'Welcome Bonus Claimed'
+                  : 'Claim 200 UHT Tokens'
+              }}
+            </button> -->
             <button
               class="btn btn-primary"
               id="ctaClaim"
-              :disabled="auth.hasClaimedWelcomeBonusPoint"
-              @click="togglePointsModal(true)"
+              @click="handleClaimClick"
             >
-              {{ auth.hasClaimedWelcomeBonusPoint ? 'Welcome Bonus Claimed' : 'Claim 200 Welcome Points' }}
+              {{
+                auth.hasClaimedWelcomeUHT
+                  ? 'Welcome Bonus Claimed'
+                  : 'Claim 200 UHT Tokens'
+              }}
+              <span v-if="auth.referrals.length < 2 || !auth.lastAnsweredQuestionID" class="ml-2">
+                🔒
+              </span>
+
             </button>
+
 
             <button class="btn btn-ghost" id="ctaJoin" @click="() => joinClicked()">Join Season 2 Waitlist</button>
 
@@ -54,6 +78,43 @@
             </div>
 
           </div>
+
+          <div
+            v-if="showRequirements"
+            class="mt-3 p-4 rounded-2xl bg-black/40 text-sm"
+          >
+            <p class="font-semibold mb-2">
+              Complete the steps below to unlock your 200 UHT Welcome Bonus:
+            </p>
+
+            <ul class="space-y-1">
+              <li class="flex items-center gap-2">
+                <span
+                  :class="auth.referrals.length >= 2 ? 'text-green-400' : 'text-red-400'"
+                >
+                  {{ auth.referrals.length >= 2 ? '✔' : '✖' }}
+                </span>
+                Invite at least 2 friends
+                <span class="opacity-70">
+                  ({{ auth.referrals.length }}/2)
+                </span>
+              </li>
+
+              <li class="flex items-center gap-2">
+                <span
+                  :class="auth.lastAnsweredQuestionID ? 'text-green-400' : 'text-red-400'"
+                >
+                  {{ auth.lastAnsweredQuestionID ? '✔' : '✖' }}
+                </span>
+                Answer one daily question
+              </li>
+            </ul>
+
+            <p class="mt-2 text-xs opacity-70">
+              Once both are completed, the bonus can be claimed instantly.
+            </p>
+          </div>
+
           <div class="stats">
             <div class="stat">
               <div class="label">Points earned</div>
@@ -86,30 +147,9 @@
         <div class="panel question">
           <h3>Question of the day</h3>
 
-          <!-- BLOCKED STATE -->
-          <div
-            v-if="!auth.hasClaimedWelcomeBonusPoint"
-            class="bg-[#1F2530] rounded-xl p-4 text-center"
-          >
-            <p class="text-[16px] font-semibold mb-2">
-              🎁 Claim your Welcome Bonus first
-            </p>
-
-            <p class="text-sm text-gray-400 mb-4">
-              To unlock daily health questions and start earning points,
-              you must first claim your <strong>200 welcome points</strong>.
-            </p>
-
-            <button
-              class="btn btn-primary"
-              @click="togglePointsModal(true)"
-            >
-              Claim Welcome Bonus
-            </button>
-          </div>
 
           <!-- NORMAL QUESTION FLOW -->
-          <div v-else id="qWrap">
+          <div id="qWrap">
             <p id="questionTxt">
               {{ dailyQuestion?.id
                 ? dailyQuestion.question
@@ -170,12 +210,12 @@
       </section>
 
 
-      <section class="bonus-claim mt-10">
+      <!-- <section class="bonus-claim mt-10">
         <div class="panel">
           <h3 class="text-xl font-bold mb-2">🎁 Bonus Claim: NFT Holder Reward</h3>
           <p class="text-[16px] mb-4">
             If you’ve minted an official <strong>UHT NFT</strong>, you can claim a one-time bonus of
-            <strong>1000 UHT</strong> tokens as a Season 2 thank-you gift!
+            <strong>200 UHT</strong> tokens as a Season 2 thank-you gift!
           </p>
 
           <div v-if="auth?.hasMintedNFT">
@@ -190,7 +230,7 @@
             </p>
           </div>
         </div>
-      </section>
+      </section> -->
 
 
 
@@ -201,8 +241,6 @@
     </div>
 
     <DashboardClaimModal v-if="showClaimModal" @close="() => toggleClaimModal(false)" />
-
-    <DashboardPointsModal v-if="showPointsModal" @close="() => togglePointsModal(false)" />
 
     <DashboardProfileModal v-if="!auth.email" @close="() => toggleProfileModal(false)" />
   </div>
@@ -217,13 +255,12 @@ import { mintTokens } from '../../apiss/web3/uhtdex';
 
 const auth = useAuth();
 const showClaimModal = ref(false)
-const showPointsModal = ref(false)
 const showProfileModal = ref(false)
 const dailyQuestion = ref({});
 const myAnswerID = ref(0);
+const showRequirements = ref(false)
 const surveyLoading = ref(false)
 const claimButtonDisabled = ref(false);
-const claimPointsLoading = ref(false);
 const gasFee = ref(0.001)
 const bonusClaimed = ref(false)
 const claimingBonus = ref(false)
@@ -252,6 +289,16 @@ onMounted(() => {
 })
 
 watch(() => myAnswerID.value, () => console.log(myAnswerID.value))
+
+watch(
+  () => [auth.value.referrals, auth.value.lastAnsweredQuestionID],
+  () => {
+    if (auth.value.referrals >= 2 && auth.value.lastAnsweredQuestionID) {
+      showRequirements.value = false
+    }
+  }
+)
+
 
 
 
@@ -328,11 +375,6 @@ function toggleClaimModal(value) {
 }
 
 
-function togglePointsModal(value) {
-  scrollUp(value);
-  showPointsModal.value = value;
-}
-
 function toggleProfileModal(value) {
   scrollUp(value);
   showProfileModal.value = value;
@@ -343,6 +385,17 @@ function scrollUp(value) {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 }
+
+const handleClaimClick = () => {
+  if (auth.value.hasClaimedWelcomeBonusPoint) return
+
+  if (auth.value.referrals.length >= 2 && auth.value.lastAnsweredQuestionID) {
+    toggleClaimModal(true)
+  } else {
+    showRequirements.value = true
+  }
+}
+
 </script>
 
 
