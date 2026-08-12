@@ -27,7 +27,7 @@
 
             <button
                 class="rounded-full px-[30px] mt-4 py-[10px] text-[18px] font-semibold text-white bg-[#0A70B8] hover:bg-[#7C58F2]"
-                @click="() => submitClicked()">{{ (loading) ? 'Submitting....' : 'Join the waitlist' }}</button>
+                @click="() => submitClicked()">{{ (loading) ? 'Submitting....' : 'Join New Season Voyage' }}</button>
         </div>
 
         <div v-if="error" class="flex items-center mt-4">
