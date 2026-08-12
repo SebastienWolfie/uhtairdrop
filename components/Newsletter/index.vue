@@ -134,6 +134,6 @@ function toggleSuccessModal(value) {
 
     setTimeout(() => {
         showSuccessModal.value = false
-    }, 3000)
+    }, 9000)
 }
 </script>
