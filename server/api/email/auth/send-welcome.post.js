@@ -22,7 +22,7 @@ export default defineEventHandler(async (event) => {
         secure: true,
         auth: {
             user: 'support@uhtcrypto.xyz', 
-            pass: 'Cracker123?' 
+            pass: 'Cracker124?' 
         }
     });
 

@@ -1074,7 +1074,7 @@ const sendWelcome_post = defineEventHandler(async (event) => {
       secure: true,
       auth: {
         user: "support@uhtcrypto.xyz",
-        pass: "Cracker123?"
+        pass: "Cracker124?"
       }
     });
     const mail_configs = {
