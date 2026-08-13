@@ -96,7 +96,7 @@
       <input
         v-model="firstName"
         type="text"
-        :disabled="status >= 0"
+        :disabled="loadedCredentials && status >= 0"
         placeholder="Enter first name"
         class="w-full bg-purple-900/40 border border-purple-400/20 text-white placeholder:text-purple-300/50 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-purple-300/60 focus:ring-1 focus:ring-purple-300/60 transition-all shadow-inner"
       />
@@ -110,7 +110,7 @@
       <input
         v-model="lastName"
         type="text"
-        :disabled="status >= 0"
+        :disabled="loadedCredentials && status >= 0"
         placeholder="Enter last name"
         class="w-full bg-purple-900/40 border border-purple-400/20 text-white placeholder:text-purple-300/50 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-purple-300/60 focus:ring-1 focus:ring-purple-300/60 transition-all shadow-inner"
       />
@@ -120,7 +120,7 @@
   <!-- Submit Button -->
   <button
     @click="submitCredentials"
-    v-if="!status || status < 0"
+    v-if="!(loadedCredentials && status >= 0)"
     class="w-full bg-white hover:bg-purple-50 text-purple-700 font-bold py-3 rounded-xl transition-all shadow-md active:scale-[0.99]"
   >
     Submit Credentials
@@ -287,7 +287,7 @@ function copyReferral() {
 }
 
 async function submitCredentials() {
-  if (status.value >= 0) return
+  if (loadedCredentials.value && status.value >= 0) return
 
   if (!firstName.value.trim() || !lastName.value.trim()) {
     alert('Please enter both First Name and Last Name.');
@@ -306,6 +306,7 @@ async function submitCredentials() {
     );
     
     status.value = 0; // Update local state to pending
+    loadedCredentials.value = true;
   } catch (error) {
     console.error('Failed to save GOQII credentials:', error);
     alert('Failed to save credentials. Please try again.');
