@@ -73,7 +73,7 @@
       </section>
 
       <footer>
-        © 2025 UHT • Universal Health Token — Mint responsibly.
+        © 2026 UHT • Universal Health Token — Mint responsibly.
       </footer>
     </div>
 

@@ -71,7 +71,7 @@
     <footer
       class="py-8 text-center text-gray-400 text-sm bg-[#0c0616]/80 border-t border-white/10"
     >
-      © 2025 UHT Governance — Built for the community
+      © 2026 UHT Governance — Built for the community
     </footer>
   </div>
 </template>

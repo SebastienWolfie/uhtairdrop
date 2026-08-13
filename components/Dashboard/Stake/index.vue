@@ -74,7 +74,7 @@
 
       <!-- Footer -->
       <footer>
-        © 2025 UHT • Universal Health Token — Stake & Boost Rewards.
+        © 2026 UHT • Universal Health Token — Stake & Boost Rewards.
       </footer>
     </div>
   </div>

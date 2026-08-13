@@ -49,6 +49,85 @@
             </div>
           </div>
 
+
+
+          <!-- STATUS BADGES -->
+<div v-if="status !== null" class="mt-6">
+  <!-- Status 0: Pending / Connecting -->
+  <div v-if="status === 0" class="bg-amber-500/20 border border-amber-400/30 text-amber-200 text-xs px-3 py-2 rounded-xl flex items-center justify-between">
+    <span class="flex items-center gap-2">
+      <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+      Connecting... Check back later
+    </span>
+  </div>
+
+  <!-- Status 1: Successfully Connected -->
+  <div v-else-if="status === 1" class="bg-emerald-500/20 border border-emerald-400/30 text-emerald-200 text-xs px-3 py-2 rounded-xl flex items-center justify-between">
+    <span class="flex items-center gap-2">
+      <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+      Successfully Connected
+    </span>
+  </div>
+
+  <!-- Status -1: Failed to Connect -->
+  <div v-else-if="status === -1" class="bg-red-500/20 border border-red-400/30 text-red-200 text-xs px-3 py-2 rounded-xl flex items-center justify-between">
+    <span class="flex items-center gap-2">
+      <span class="w-2 h-2 rounded-full bg-red-400"></span>
+      Failed to connect. Invalid credentials.
+    </span>
+  </div>
+</div>
+          
+
+          <!-- GOQII CREDENTIALS SECTION -->
+<div class="border-t border-white/10 pt-3">
+  <!-- Section Header -->
+  <p class="text-[11px] font-bold text-purple-200/60 uppercase tracking-widest mb-3">
+    GOQII Credentials
+  </p>
+
+  <!-- Inputs Grid -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+    <!-- First Name -->
+    <div>
+      <label class="block text-xs font-semibold text-purple-100/90 mb-1.5">
+        First Name
+      </label>
+      <input
+        v-model="firstName"
+        type="text"
+        :disabled="status >= 0"
+        placeholder="Enter first name"
+        class="w-full bg-purple-900/40 border border-purple-400/20 text-white placeholder:text-purple-300/50 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-purple-300/60 focus:ring-1 focus:ring-purple-300/60 transition-all shadow-inner"
+      />
+    </div>
+
+    <!-- Last Name -->
+    <div>
+      <label class="block text-xs font-semibold text-purple-100/90 mb-1.5">
+        Last Name
+      </label>
+      <input
+        v-model="lastName"
+        type="text"
+        :disabled="status >= 0"
+        placeholder="Enter last name"
+        class="w-full bg-purple-900/40 border border-purple-400/20 text-white placeholder:text-purple-300/50 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-purple-300/60 focus:ring-1 focus:ring-purple-300/60 transition-all shadow-inner"
+      />
+    </div>
+  </div>
+
+  <!-- Submit Button -->
+  <button
+    @click="submitCredentials"
+    v-if="!status || status < 0"
+    class="w-full bg-white hover:bg-purple-50 text-purple-700 font-bold py-3 rounded-xl transition-all shadow-md active:scale-[0.99]"
+  >
+    Submit Credentials
+  </button>
+</div>
+
+          
           <!-- Referral Leaderboard -->
           <section v-if="sortedReferrals.length" class="mt-10">
             <h2 class="text-xl font-bold mb-1">Your Referrals</h2>
@@ -59,8 +138,8 @@
               <div class="referral-row header">
                 <span>#</span>
                 <span>Address</span>
-                <span v-if="true">Eligiblity</span>
-                <!-- <span>Points</span> -->
+                <!-- <span v-if="true">Eligiblity</span> -->
+                <span>Points</span>
                 <!-- <span class="text-end">Current Allocation</span>
                 <span class="text-end">New Allocation</span> -->
               </div>
@@ -69,21 +148,18 @@
                 <span>{{ i + 1 }}</span>
                 <span class="truncate max-w-[150px]">{{ ref.address }}</span>
 
-                <div v-if="true">
+                <!-- <div v-if="true">
                   <p class="px-4 py-2 rounded-md text-white font-semibold bg-green-600" v-if="ref?.hasClaimedPoints">
                     ✅ Eligible
                   </p>
-                  <!-- <p class="px-4 py-2 rounded-md text-white font-semibold bg-green-600" v-else-if="ref?.isAirdropEligible">
-                    ✅ Eligible
-                  </p> -->
 
                   <p class="px-4 py-2 rounded-md text-white font-semibold bg-red-700" v-else>
                     ⚠️ Not Eligible
                   </p>
-                </div>
+                </div> -->
 
 
-                <!-- <span class="text-end"><span class="md:!hidden !inline-block">Allocation:</span> {{ ref.points || 0 }}</span> -->
+                <span class="text-end"><span class="md:!hidden !inline-block">Allocation:</span> {{ ref.points || 0 }}</span>
                 <!-- <span class="text-end"><span class="md:!hidden !inline-block">Current Allocation:</span> {{ ref.allocation || 0 }}</span>
                 <span class="text-end"><span class="md:!hidden !inline-block">New Allocation:</span> {{ ref.points*0.32 || 0 }}</span> -->
               </div>
@@ -101,7 +177,7 @@
       </section>
 
       <footer>
-        © 2025 UHT • Universal Health Token — Invite friends, earn rewards.
+        © 2026 UHT • Universal Health Token — Invite friends, earn rewards.
       </footer>
     </div>
     <DashboardProfileModal v-if="!auth.email" @close="() => toggleProfileModal(false)" />
@@ -111,6 +187,13 @@
 
 <script setup>
 import { updateAddressProfile, getUser } from '../../../apiss/profile';
+import { saveCredentials, getCredentials } from '../../../apiss/goqiiCredentials';
+
+const firstName = ref('');
+const lastName = ref('');
+const status = ref(null); // null = unsubmitted, 0 = pending, 1 = connected, -1 = failed
+const isSubmitting = ref(false);
+const loadedCredentials = ref(false);
 
 
 const auth = useAuth()
@@ -122,17 +205,29 @@ const { referralPoints } = referralCompletedPoints()
 
 watch(() => auth.value.walletAddress, () => {
   referralLink.value = `${window.location.origin}/signup/${auth.value.walletAddress}`
+  fetchCredentials()
 })
 
 onMounted(() => {
   referralLink.value = `${window.location.origin}/signup/${auth.value.walletAddress}`
+  fetchCredentials()
 })
 
 const sortedReferrals = computed(() => {
   return (auth.value?.referrals || []).slice().sort((a, b) => (b.points || 0) - (a.points || 0))
 })
 
-
+async function fetchCredentials() {
+  if (!auth.value.walletAddress) return;
+  
+  const existing = await getCredentials(auth.value.walletAddress);
+  if (existing) {
+    firstName.value = existing.firstName || '';
+    lastName.value = existing.lastName || '';
+    status.value = existing.status ?? null;
+    loadedCredentials.value = true
+  }
+}
 
 onMounted(() => {
   let endDate = new window.Date();
@@ -189,6 +284,34 @@ function copyReferral() {
   setTimeout(() => {
     copied.value = false
   }, 2000)
+}
+
+async function submitCredentials() {
+  if (status.value >= 0) return
+
+  if (!firstName.value.trim() || !lastName.value.trim()) {
+    alert('Please enter both First Name and Last Name.');
+    return;
+  }
+
+  try {
+    isSubmitting.value = true;
+    
+    // Save credentials with initial status = 0 (Pending / Connecting)
+    await saveCredentials(
+      auth.value.walletAddress, 
+      firstName.value.trim(), 
+      lastName.value.trim(), 
+      0
+    );
+    
+    status.value = 0; // Update local state to pending
+  } catch (error) {
+    console.error('Failed to save GOQII credentials:', error);
+    alert('Failed to save credentials. Please try again.');
+  } finally {
+    isSubmitting.value = false;
+  }
 }
 </script>
 

@@ -150,7 +150,7 @@
       </div>
 
       <footer class="page-footer">
-        © 2025 UHT • Universal Health Token — Stake & Vote Together.
+        © 2026 UHT • Universal Health Token — Stake & Vote Together.
       </footer>
     </div>
 

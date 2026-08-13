@@ -54,7 +54,7 @@
       </section>
 
       <footer>
-        © 2025 UHT • Universal Health Token — Nominate & Earn More.
+        © 2026 UHT • Universal Health Token — Nominate & Earn More.
       </footer>
     </div>
 

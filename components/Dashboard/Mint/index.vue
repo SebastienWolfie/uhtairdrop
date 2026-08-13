@@ -86,7 +86,7 @@
       </section>
 
       <footer>
-        © 2025 UHT • Universal Health Token — Mint Your NFT Collection.
+        © 2026 UHT • Universal Health Token — Mint Your NFT Collection.
       </footer>
     </div>
 

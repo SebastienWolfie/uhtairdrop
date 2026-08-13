@@ -49,7 +49,7 @@
       </section>
 
       <footer>
-        © 2025 UHT • Universal Health Token — Compete & Earn Rewards.
+        © 2026 UHT • Universal Health Token — Compete & Earn Rewards.
       </footer>
     </div>
   </div>

@@ -29,7 +29,7 @@
         </div>
 
 
-        <p class="mt-[50px] text-[16px] md:text-[18px]">© 2025 Force of Good Foundation. All rights reserved</p>
+        <p class="mt-[50px] text-[16px] md:text-[18px]">© 2026 Force of Good Foundation. All rights reserved</p>
 
     </div>
 </template>

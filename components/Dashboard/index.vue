@@ -236,7 +236,7 @@
 
       <footer>
 
-        © 2025 UHT • Universal Health Token — Building a healthier future together.
+        © 2026 UHT • Universal Health Token — Building a healthier future together.
       </footer>
     </div>
 
