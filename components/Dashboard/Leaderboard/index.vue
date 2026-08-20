@@ -37,12 +37,13 @@
 
       <!-- Current User Rank -->
       <section class="your-rank"
-        v-if="auth.walletAddress.toLowerCase() != '0xb2e85090cBb09C9F508D39Db55f996F364281c62'.toLowerCase()">
+        v-if="auth.walletAddress?.toLowerCase() != '0xb2e85090cBb09C9F508D39Db55f996F364281c62'.toLowerCase()">
         <h2>Your Position</h2>
         <div class="your-card">
           <div class="rank">{{ simulateRank || '—' }}</div>
           <div class="user">{{ auth.username || truncateWallet(auth.walletAddress) }}</div>
-          <div class="points">{{ (auth.points || 0) + (referralPoints || 0) + timeBasedPoints }} pts</div>
+          <!-- Use the new computed total here -->
+          <div class="points">{{ currentUserTotalPoints }} pts</div>
         </div>
       </section>
 
@@ -52,6 +53,7 @@
     </div>
   </div>
 </template>
+ 
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { getAll } from '../../../apiss/leaderboard'
@@ -60,25 +62,18 @@ const auth = useAuth()
 const { referralPoints } = referralCompletedPoints()
 const top50 = ref([])
 
-const timeBasedPoints = ref(0)
+// Use a reactive time reference. Starting at 0 prevents Nuxt SSR errors.
+const currentTime = ref(0)
 let pointsInterval = null
 
-const calculateTimePoints = () => {
-  const START_TIME = new window.Date('2026-08-20T00:00:00Z').getTime()
-  const now = window.Date.now()
-
-  // Get total elapsed hours
-  const elapsedHours = Math.max(0, now - START_TIME) / (1000 * 60 * 60)
-
-  // Floor the hours so points jump in clean steps of 50
-  timeBasedPoints.value = Math.floor(elapsedHours) * 50
-}
-
 onMounted(async () => {
-  calculateTimePoints()
+  // Set the real time only on the client
+  currentTime.value = window.Date.now()
 
-  // Check every 60 seconds to step up when the next hour hits
-  pointsInterval = setInterval(calculateTimePoints, 60000)
+  // Update the time every 60 seconds so points roll over live if they cross a day boundary
+  pointsInterval = setInterval(() => {
+    currentTime.value = window.Date.now()
+  }, 60000)
 
   top50.value = await getAll() || []
 
@@ -95,11 +90,47 @@ watch(() => auth.value.points, () => {
   console.log("leaderboard updated", formatList.value)
 })
 
+// Calculate extra points per user based on their specific dateCreated
 const formatList = computed(() => {
-  return top50.value.map(user => ({
-    ...user,
-    points: Number.parseInt(user.points || 0) + timeBasedPoints.value 
-  })).sort((a, b) => b.points - a.points);
+  const now = currentTime.value;
+
+  return top50.value.map(user => {
+    let extraPoints = 0;
+    
+    // Only calculate if we are on the client (now > 0) and the user has a date
+    if (now > 0 && user.dateCreated) {
+      const createdTime = new window.Date(user.dateCreated).getTime();
+      
+      // Calculate total elapsed days (1000ms * 60s * 60m * 24h)
+      const elapsedDays = Math.max(0, now - createdTime) / (1000 * 60 * 60 * 24);
+      
+      // Floor the days so it jumps purely in multiples of 50 per full day
+      extraPoints = Math.floor(elapsedDays) * 50;
+    }
+
+    return {
+      ...user,
+      points: Number.parseInt(user.points || 0) + extraPoints 
+    }
+  }).sort((a, b) => b.points - a.points);
+})
+
+// Calculate the current logged-in user's total points similarly
+const currentUserTotalPoints = computed(() => {
+  let extraPoints = 0;
+  const now = currentTime.value;
+
+  // Assuming auth.value has dateCreated. If not, they get 0 extra time points.
+  if (now > 0 && auth.value.dateCreated) {
+    const createdTime = new window.Date(auth.value.dateCreated).getTime();
+    const elapsedDays = Math.max(0, now - createdTime) / (1000 * 60 * 60 * 24);
+    extraPoints = Math.floor(elapsedDays) * 50;
+  }
+
+  const basePoints = Number.parseInt(auth.value.points || 0);
+  const refPoints = Number.parseInt(referralPoints.value || 0);
+
+  return basePoints + refPoints + extraPoints;
 })
 
 function truncateWallet(address) {
@@ -115,11 +146,9 @@ function rankClass(index) {
 
 const simulateRank = computed(() => {
   const maxPoints = formatList.value[0]?.points || 0;
-  const minPoints = formatList.value[formatList.value.length - 1]?.points || 0;
   const baseRank = 384; 
 
-  const userTotalPoints = (auth.value.points || 0) + (referralPoints.value || 0) + timeBasedPoints.value;
-  const progress = Math.min(userTotalPoints / (maxPoints || 1), 1);
+  const progress = Math.min(currentUserTotalPoints.value / (maxPoints || 1), 1);
 
   const simulatedRank = Math.round(baseRank - (baseRank - 51) * progress);
 

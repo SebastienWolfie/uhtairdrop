@@ -68,7 +68,7 @@ const appConfig0 = defineAppConfig({
 
 const inlineAppConfig = {
   "nuxt": {
-    "buildId": "d7e88a64-08f2-472f-8e00-177a995b09f1"
+    "buildId": "2987c2d7-24a0-4853-907d-c10c20ef3448"
   }
 };
 
@@ -2549,19 +2549,19 @@ const assets = {
     "size": 4405,
     "path": "../../.output/public/Dashboard/Mint/index.html"
   },
-  "/Dashboard/Nominate/index.html": {
-    "type": "text/html; charset=utf-8",
-    "etag": "\"1135-on45Ijx8bbzEVTCXmGWc2El3sWA\"",
-    "mtime": "2025-11-21T09:53:23.845Z",
-    "size": 4405,
-    "path": "../../.output/public/Dashboard/Nominate/index.html"
-  },
   "/Dashboard/Governance/index.html": {
     "type": "text/html; charset=utf-8",
     "etag": "\"1135-on45Ijx8bbzEVTCXmGWc2El3sWA\"",
     "mtime": "2025-11-21T09:53:23.849Z",
     "size": 4405,
     "path": "../../.output/public/Dashboard/Governance/index.html"
+  },
+  "/Dashboard/Nominate/index.html": {
+    "type": "text/html; charset=utf-8",
+    "etag": "\"1135-on45Ijx8bbzEVTCXmGWc2El3sWA\"",
+    "mtime": "2025-11-21T09:53:23.845Z",
+    "size": 4405,
+    "path": "../../.output/public/Dashboard/Nominate/index.html"
   },
   "/Dashboard/Referral/index.html": {
     "type": "text/html; charset=utf-8",
