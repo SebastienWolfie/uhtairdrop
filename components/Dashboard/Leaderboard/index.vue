@@ -33,8 +33,6 @@
             <div class="points">{{ user.points }} pts</div>
           </li>
         </ul>
-
-
       </section>
 
       <!-- Current User Rank -->
@@ -44,7 +42,7 @@
         <div class="your-card">
           <div class="rank">{{ simulateRank || '—' }}</div>
           <div class="user">{{ auth.username || truncateWallet(auth.walletAddress) }}</div>
-          <div class="points">{{ auth.points + referralPoints || 0 }} pts</div>
+          <div class="points">{{ (auth.points || 0) + (referralPoints || 0) + timeBasedPoints }} pts</div>
         </div>
       </section>
 
@@ -54,15 +52,34 @@
     </div>
   </div>
 </template>
-
 <script setup>
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { getAll } from '../../../apiss/leaderboard'
-const auth = useAuth()
-const top50 = ref([])
-const { referralPoints } = referralCompletedPoints()
 
+const auth = useAuth()
+const { referralPoints } = referralCompletedPoints()
+const top50 = ref([])
+
+const timeBasedPoints = ref(0)
+let pointsInterval = null
+
+const calculateTimePoints = () => {
+  const START_TIME = new window.Date('2026-08-20T00:00:00Z').getTime()
+  const now = window.Date.now()
+
+  // Get total elapsed hours
+  const elapsedHours = Math.max(0, now - START_TIME) / (1000 * 60 * 60)
+
+  // Floor the hours so points jump in clean steps of 50
+  timeBasedPoints.value = Math.floor(elapsedHours) * 50
+}
 
 onMounted(async () => {
+  calculateTimePoints()
+
+  // Check every 60 seconds to step up when the next hour hits
+  pointsInterval = setInterval(calculateTimePoints, 60000)
+
   top50.value = await getAll() || []
 
   if (top50.value.length > 50) {
@@ -70,24 +87,20 @@ onMounted(async () => {
   }
 })
 
+onUnmounted(() => {
+  if (pointsInterval) clearInterval(pointsInterval)
+})
+
 watch(() => auth.value.points, () => {
-
-  console.log("leaderboard", formatList.value)
-
-
-  // const leatRank = formatList.value[formatList.value.length-1];
-  // if (auth.value.points> leatRank.points) top50.value.push({
-  //   points: auth.value.points,
-  //   username: auth.value.username,
-  //   walletAddress: auth.value.walletAddress
-  // })
+  console.log("leaderboard updated", formatList.value)
 })
 
 const formatList = computed(() => {
-  return top50.value.sort((a, b) => b.points - a.points);
+  return top50.value.map(user => ({
+    ...user,
+    points: Number.parseInt(user.points || 0) + timeBasedPoints.value 
+  })).sort((a, b) => b.points - a.points);
 })
-
-const currentUserRank = ref(null)
 
 function truncateWallet(address) {
   return address ? address.slice(0, 6) + "..." + address.slice(-4) : ""
@@ -100,20 +113,16 @@ function rankClass(index) {
   return ''
 }
 
-
-
 const simulateRank = computed(() => {
   const maxPoints = formatList.value[0]?.points || 0;
-  const minPoints = formatList.value[formatList.value.length]?.points || 0;
-  const baseRank = 384; // starting simulated rank for low points
+  const minPoints = formatList.value[formatList.value.length - 1]?.points || 0;
+  const baseRank = 384; 
 
-  // Normalize points to [0,1]
-  const progress = Math.min((auth.value.points + referralPoints.value) / maxPoints, 1);
+  const userTotalPoints = (auth.value.points || 0) + (referralPoints.value || 0) + timeBasedPoints.value;
+  const progress = Math.min(userTotalPoints / (maxPoints || 1), 1);
 
-  // Calculate rank: more points -> closer to top 50
   const simulatedRank = Math.round(baseRank - (baseRank - 51) * progress);
 
-  console.log("simulatedRank", simulatedRank)
   return simulatedRank;
 })
 </script>
