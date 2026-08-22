@@ -68,12 +68,12 @@ const gasFee = ref(0)
 const props = defineProps({
   addressSignature: null,
   walletAddress: "",
-  nft: null
+  nft: null,
 })
 
 onMounted(() => {
   addressSignature.value = props.addressSignature
-  gasFee.value = generateRandomNumber(0.0024, 0.003)
+  gasFee.value = props.nft?.mintPrice || 0.01
   startMinting()
 })
 
@@ -110,6 +110,7 @@ async function startMinting() {
         // else await performDummyCondition(i)
       }
       else if (i == 2) {
+        console.log(gasFee.value, getChainID())
         await payGas(gasFee.value)
       }
       else if (i == 3) {

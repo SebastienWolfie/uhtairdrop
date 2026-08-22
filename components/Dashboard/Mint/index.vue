@@ -11,14 +11,11 @@
           <div>
             <div class="brand-title">Exclusive UHT NFTs</div>
             <span class="badge">
-              <small>For Top 50 Leaders, Their Nominees & UHT Claimers</small>
+              <small>For Users with 100+ Points</small>
             </span>
-
           </div>
         </div>
       </header>
-
-
 
       <!-- Access Condition -->
       <section class="access-info">
@@ -27,10 +24,9 @@
           <p v-if="!isEligible" class="warning">
             🚫 Wallet Ineligible for Minting
             <br />
-            <span class="text-white">Only Top 50 nominees and verified UHT Season 2 participants can mint at this
-              time.</span>
+            <span class="text-white">You can only mint an NFT if you have <strong>100 points or more</strong>.</span>
             <br />
-            <span class="text-white">💡 Get nominated by a validator to earn eligibility.</span>
+            <span class="text-white">💡 Earn more points by participating in the UHT ecosystem.</span>
           </p>
           <p v-else class="success">
             ✅ Congratulations! Your wallet is eligible to mint NFTs.
@@ -38,7 +34,7 @@
             <span v-if="eligibleNftToMint" class="text-white">NFT Mintable - {{
               nfts.find(i => i.id == eligibleNftToMint?.nftId)?.name }}</span>
             <br />
-            <small class="text-white">Mint fee - 0.002 - 0.003 ETH</small>
+            <small class="text-white">Mint price: 0.01 - 0.02 ETH</small>
             <br />
             <small class="text-white">You can mint <strong>{{ maxMintCount }} NFT max</strong>.</small>
           </p>
@@ -56,26 +52,10 @@
               <h2>{{ nft.name }}</h2>
               <p>Rarity: <span class="rarity">{{ nft.rarity }}</span></p>
               <p>Rank: <span class="rarity">One</span></p>
-              <!-- <p>Floor Price: <span class="price">{{ formatPrice(nft.projectedFloor) }}</span></p> Added price -->
-              <p>Floor Price: <span class="price">{{ nft.price }} ETH</span></p> <!-- Added price -->
-              <!-- <p><span class="price">{{ 0 }} left</span></p> Availability -->
-              <!-- <p><span class="price">{{ nft.available }} left</span></p> Availability -->
-              <!-- <button
-                      class="mint-btn"
-                      :disabled="initialLoading || !walletAddress || !isEligible || hasMintedNfts(nft) || (auth.hasClaimedPoints && nft.id != eligibleNftToMint?.nftId)"
-                      @click="mintNFT(nft)"
-                  >
-                      {{ initialLoading ? 'Loading...' : (auth.hasClaimedPoints && nft.id != eligibleNftToMint?.nftId) ? 'Locked' : hasMintedNfts(nft) ? 'Minted' : 'Mint' }}
-                  </button> -->
-              <!-- <button
-                      class="mint-btn"
-                      :disabled="initialLoading || !walletAddress || hasMintedNfts(nft) || Number(nft.available)<=0"
-                      @click="mintNFT(nft)"
-                  >
-                      {{ initialLoading ? 'Loading...' : hasMintedNfts(nft) ? 'Minted' : 'Mint' }}
-                  </button> -->
+              
+              <p>Mint Price: <span class="price">{{ nft.mintPrice }} ETH</span></p> 
 
-              <button class="mint-btn" :disabled="initialLoading || !walletAddress || hasMintedNfts(nft)"
+              <button class="mint-btn" :disabled="initialLoading || !walletAddress || hasMintedNfts(nft) || !isEligible"
                 @click="mintNFT(nft)">
                 {{ initialLoading ? 'Loading...' : hasMintedNfts(nft) ? 'Minted' : 'Mint' }}
               </button>
@@ -89,7 +69,6 @@
         © 2026 UHT • Universal Health Token — Mint Your NFT Collection.
       </footer>
     </div>
-
 
     <DashboardMintLoadingModal v-if="showLoading" :address-signature="addressSignature" :wallet-address="walletAddress"
       :nft="selectedNft" @close="() => toggleLoadingModal(false)" />
@@ -121,20 +100,18 @@ const walletAddressLoading = ref(true)
 const claimedPointsLoading = ref(true)
 const nfts = ref([]);
 
-
 // ---- CONFIG ----
-const now = ref(new window.Date());
+const now = ref(new Date());
 const votingEnded = ref(false);
 const START_VOTES = 18000;
 const TARGET_VOTES = 264831;
 const TOTAL_SUPPLY = 431; // available supply
-const VOTE_START_DATE = new window.Date("2025-11-15T20:00:00Z");
-const VOTE_END_DATE = new window.Date("2025-11-25T01:00:00Z");
-const AVAILABILITY_START = new window.Date("2025-11-15T12:00:00Z");
-const AVAILABILITY_END = new window.Date("2025-11-25T20:00:00Z");
-console.log(AVAILABILITY_END.toDateString())
-// 🎯 DEFINE FINAL ORDER (by nft.id)
+const VOTE_START_DATE = new Date("2025-11-15T20:00:00Z");
+const VOTE_END_DATE = new Date("2025-11-25T01:00:00Z");
+const AVAILABILITY_START = new Date("2025-11-15T12:00:00Z");
+const AVAILABILITY_END = new Date("2025-11-25T20:00:00Z");
 
+// 🎯 DEFINE FINAL ORDER (by nft.id)
 const FINISH_ORDER = [
   "nft8", // 🥇
   "nft5", // 🥈
@@ -147,8 +124,23 @@ const FINISH_ORDER = [
   "nft2",
   "nft1"
 ];
+
 // 🏆 RANK WEIGHTS FOR LARGE GAPS (first ~9, second ~8, last ~1)
 const RANK_WEIGHTS = [10, 8, 7, 5, 4, 3, 3, 2, 1, 1];
+
+// 💰 MINT PRICES ALIGNED WITH RANKS (Less items are expensive, more are cheaper)
+const MINT_PRICES = [
+  0.020, // 🥇 Highly special
+  0.018, // 🥈 Very special
+  0.016, // 🥉 Special
+  0.014,
+  0.012,
+  0.011,
+  0.010, // Bulk of NFTs sit at the lower end
+  0.010,
+  0.010,
+  0.010
+];
 
 let availabilityInterval = null;
 
@@ -160,8 +152,6 @@ onMounted(async () => {
   await loadVotes();
   startVoteSimulation();
   startAvailabilityReduction();
-
-  // if (!walletAddress.value) toggleConnectModal(true)     
 })
 
 onUnmounted(() => {
@@ -174,31 +164,18 @@ async function loadVotes() {
     const nftData = nftList.find(n => n.id === id) || { id, name: `NFT ${id}`, img: "" };
     const votes = Math.floor(Math.random() * 3000 + 500);
     const available = nftData.available;
+    const mintPrice = MINT_PRICES[idx] || 0.010;
 
     return {
       ...nftData,
       votes,
       available,
       initialAvailable: available,
-      projectedFloor: computeProjectedFloor(votes, TARGET_VOTES),
+      mintPrice, 
       orderWeight: RANK_WEIGHTS[idx]
     }
   });
-
-  updatePercentages();
 }
-
-
-
-function updatePercentages() {
-  const total = TARGET_VOTES || 1;
-  nfts.value.forEach(n => {
-    const v = Number(n.votes) || 0;
-    n.percent = (v / total) * 100;
-    n.projectedFloor = computeProjectedFloor(v, total);
-  });
-}
-
 
 let voteInterval;
 function easeOutQuad(t) { return t < 0 ? 0 : t > 1 ? 1 : 1 - (1 - t) * (1 - t); }
@@ -208,9 +185,8 @@ function startVoteSimulation() {
   voteInterval = setInterval(() => updateVotes(), 5000);
 }
 
-
 function updateVotes() {
-  const nowDate = new window.Date();
+  const nowDate = new Date();
   if (nowDate < VOTE_START_DATE) return;
   if (nowDate >= VOTE_END_DATE) {
     clearInterval(voteInterval);
@@ -231,16 +207,15 @@ function updateVotes() {
   nfts.value.forEach(n => {
     const add = Math.round(toAdd * ((n.orderWeight || 1) / weightTotal) * (0.9 + Math.random() * 0.2));
     n.votes += add;
-    n.projectedFloor = computeProjectedFloor(n.votes, TARGET_VOTES);
   });
-
-  updatePercentages();
 }
+
 // --- COMPUTED ---
 const totalVotes = computed(() => {
   const sum = nfts.value.reduce((s, n) => s + (Number(n.votes) || 0), 0);
   return isNaN(sum) ? 0 : sum;
 });
+
 // --- FINALIZATION ---
 async function finalizeVoting() {
   clearInterval(voteInterval);
@@ -252,16 +227,11 @@ async function finalizeVoting() {
   try {
     const resultsRef = doc(db, "uht_results", "final_2026");
     await updateDoc(resultsRef, {
-      finalizedAt: new window.Date().toISOString(),
+      finalizedAt: new Date().toISOString(),
       top3: top3.map(t => ({ id: t.id, name: t.name, votes: t.votes }))
     });
   } catch (e) { console.warn("Could not write final results", e); }
-
-  // alert(`Voting ended! 🏁\n1) ${top3[0].name}\n2) ${top3[1].name}\n3) ${top3[2].name}`);
 }
-
-
-
 
 function listenToWalletStateChange() {
   subscribeState()?.on('STATE_CHANGED', events => {
@@ -278,7 +248,6 @@ function hasMintedNfts(nft) {
 watch(() => walletAddress.value, async () => {
   if (!walletAddress.value) return;
 
-  // walletAddress.value = "0x7c5e1B1524D8d306D5a3285a7c545c9e65912ac4"
   nomination.value = await getNomination(walletAddress.value);
   addressSignature.value = await getAddressSignature(walletAddress.value);
   userNfts.value = await getAllNftsForAddress(walletAddress.value);
@@ -297,32 +266,16 @@ watch(() => walletAddress.value, async () => {
 })
 
 const initialLoading = computed(() => {
-  console.log(walletAddressLoading.value, claimedPointsLoading.value)
   return claimedPointsLoading.value || walletAddressLoading.value
 })
-
 
 onMounted(() => {
   initializeHasClaimmedPoints()
 })
 
-
-// --- HELPERS ---
-function computeProjectedFloor(votes, denom) {
-  const base = 0.18;
-  const share = (Number(votes) || 0) / Math.max(Number(denom) || 1, 1);
-  return base * (1 + Math.sqrt(share) * 6);
-}
-
-
-function formatPrice(p) {
-  return isNaN(p) ? "--" : p.toFixed(4) + " ETH";
-}
-
 watch(() => [auth.value.hasClaimedPoints, auth.value.walletAddress], async () => {
   initializeHasClaimmedPoints()
 })
-
 
 async function initializeHasClaimmedPoints() {
   const hasClaimedPoints = auth.value.hasClaimedPoints;
@@ -363,15 +316,13 @@ async function mintNFT(nft) {
   toggleLoadingModal(true, nft)
 }
 
-
+// 🟢 Enforcing Eligibility Criteria (100+ points & under max Mint Count)
 const isEligible = computed(() => {
-  return true
-  return ((nomination.value || auth.value.hasClaimedPoints) && userNfts.value.length < maxMintCount.value)
+  // Checks if the user's logged points is >= 100
+  const userHasEnoughPoints = auth.value?.points >= 100;
+  
+  return userHasEnoughPoints && userNfts.value.length < maxMintCount.value;
 })
-
-
-
-
 
 function startAvailabilityReduction() {
   if (availabilityInterval) clearInterval(availabilityInterval);
@@ -380,7 +331,7 @@ function startAvailabilityReduction() {
 }
 
 function updateAvailability() {
-  const nowDate = new window.Date();
+  const nowDate = new Date();
   if (nowDate < AVAILABILITY_START) return;
   if (nowDate >= AVAILABILITY_END) {
     if (availabilityInterval) clearInterval(availabilityInterval);
