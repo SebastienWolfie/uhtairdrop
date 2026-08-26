@@ -34,7 +34,7 @@ import { doc, onSnapshot } from 'firebase/firestore'
 import { db } from '~/firebase' // Adjust path to your firebase init file
 
 // 💡 Change this string every time you deploy a major UI/App release
-const CURRENT_BUILD_VERSION = 'v1.0.1'
+const CURRENT_BUILD_VERSION = 'v1.0.2'
 
 const showReloadModal = ref(false)
 const updateMessage = ref('We’ve just pushed an update to improve your experience. Please refresh your browser to get the latest features.')
