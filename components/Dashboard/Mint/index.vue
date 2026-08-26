@@ -1,77 +1,200 @@
 <template>
-  <div class="body">
-    <DashboardHeader class="md:mx-[10%] mx-[2%] sticky top-[10px] z-50" />
+  <div class="body min-h-screen bg-[#0b0c1b] text-white">
+    <DashboardHeader class="mx-2 sm:mx-4 md:mx-[10%] sticky top-[10px] z-50" />
 
-    <div class="container">
+    <div class="container max-w-[1400px] mx-auto px-3 sm:px-6 py-4 sm:py-8">
+      
       <!-- Header -->
-      <header>
-        <div class="uht-mark">
-          <img src="/images/uht-jar.jpg" alt="NFT Minting"
-            onerror="this.src='https://dummyimage.com/96x96/6a44ff/ffffff&text=NFT'" />
-          <div>
-            <div class="brand-title">Exclusive UHT NFTs</div>
-            <span class="badge">
-              <small>For Users with 100+ Points</small>
+      <header class="mb-6 sm:mb-8">
+        <div class="uht-mark flex items-center gap-3 sm:gap-4">
+          <img 
+            src="/images/uht-jar.jpg" 
+            alt="NFT Minting"
+            class="w-12 h-12 sm:w-16 sm:h-16 rounded-xl object-cover shrink-0"
+            onerror="this.src='https://dummyimage.com/96x96/6a44ff/ffffff&text=NFT'" 
+          />
+          <div class="min-w-0 flex-1">
+            <h1 class="brand-title text-xl sm:text-3xl font-extrabold text-white truncate m-0">Exclusive UHT NFTs</h1>
+            <span class="badge inline-block mt-1">
+              <small class="text-xs sm:text-sm text-[#b59cfc] bg-[#6a44ff]/15 px-2.5 py-0.5 rounded-full border border-[#6a44ff]/30">
+                For Users with 100+ Points
+              </small>
             </span>
           </div>
         </div>
       </header>
 
-      <!-- Access Condition -->
-      <section class="access-info">
-        <h1>Eligibility 🎟️</h1>
-        <div class="access-card">
-          <p v-if="!isEligible" class="warning">
-            🚫 Wallet Ineligible for Minting
-            <br />
-            <span class="text-white">You can only mint an NFT if you have <strong>100 points or more</strong>.</span>
-            <br />
-            <span class="text-white">💡 Earn more points by participating in the UHT ecosystem.</span>
-          </p>
-          <p v-else class="success">
-            ✅ Congratulations! Your wallet is eligible to mint NFTs.
-            <br />
-            <span v-if="eligibleNftToMint" class="text-white">NFT Mintable - {{
-              nfts.find(i => i.id == eligibleNftToMint?.nftId)?.name }}</span>
-            <br />
-            <small class="text-white">Mint price: 0.01 - 0.02 ETH</small>
-            <br />
-            <small class="text-white">You can mint <strong>{{ maxMintCount }} NFT max</strong>.</small>
-          </p>
-        </div>
-      </section>
-
-      <!-- NFT List -->
-      <section class="nft-list">
-        <h1>Available NFTs</h1>
-
-        <ul>
-          <li v-for="(nft, index) in nfts" :key="nft.id" class="nft-card">
-            <img :src="nft.img" :alt="nft.name" class="nft-image" />
-            <div class="nft-info">
-              <h2>{{ nft.name }}</h2>
-              <p>Rarity: <span class="rarity">{{ nft.rarity }}</span></p>
-              <p>Rank: <span class="rarity">One</span></p>
-              
-              <p>Mint Price: <span class="price">{{ nft.mintPrice }} ETH</span></p> 
-
-              <button class="mint-btn" :disabled="initialLoading || !walletAddress || hasMintedNfts(nft) || !isEligible"
-                @click="mintNFT(nft)">
-                {{ initialLoading ? 'Loading...' : hasMintedNfts(nft) ? 'Minted' : 'Mint' }}
-              </button>
+      <!-- Two-Column Grid (1 column on mobile, 12 columns on lg screens) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+        
+        <!-- LEFT COLUMN: Eligibility & NFTs -->
+        <div class="lg:col-span-7 xl:col-span-8 flex flex-col gap-6 sm:gap-8">
+          
+          <!-- Access Condition -->
+          <section class="access-info bg-[#131428]/80 border border-white/10 rounded-2xl p-4 sm:p-6 backdrop-blur-sm">
+            <h2 class="text-lg sm:text-xl font-bold text-white mb-3">Eligibility 🎟️</h2>
+            <div class="access-card">
+              <p v-if="!isEligible" class="warning text-red-400 text-sm sm:text-base m-0 leading-relaxed">
+                🚫 Wallet Ineligible for Minting
+                <br />
+                <span class="text-white mt-1.5 inline-block">
+                  You can only mint an NFT if you have <strong>100 points or more</strong>.
+                </span>
+                <br />
+                <span class="text-gray-400 text-xs sm:text-sm">💡 Earn more points by participating in the UHT ecosystem.</span>
+              </p>
+              <p v-else class="success text-emerald-400 text-sm sm:text-base m-0 leading-relaxed">
+                ✅ Congratulations! Your wallet is eligible to mint NFTs.
+                <br />
+                <span v-if="eligibleNftToMint" class="text-white mt-1.5 inline-block">
+                  NFT Mintable - {{ nfts.find(i => i.id == eligibleNftToMint?.nftId)?.name }}
+                </span>
+                <br />
+                <small class="text-gray-300 block text-xs sm:text-sm mt-1">Mint price: 0.01 - 0.02 ETH</small>
+                <small class="text-gray-300 block text-xs sm:text-sm">You can mint <strong>{{ maxMintCount }} NFT max</strong>.</small>
+              </p>
             </div>
-          </li>
-        </ul>
+          </section>
 
-      </section>
+          <!-- NFT List Grid -->
+          <section class="nft-list">
+            <h2 class="text-xl sm:text-2xl font-bold text-white mb-4 sm:mb-6">Available NFTs</h2>
+            <ul class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 p-0 m-0 list-none">
+              <li 
+                v-for="nft in nfts" 
+                :key="nft.id" 
+                class="nft-card bg-[#1d1f3b]/60 border border-white/10 rounded-2xl overflow-hidden hover:border-[#6a44ff]/60 transition-all flex flex-col"
+              >
+                <img :src="nft.img" :alt="nft.name" class="nft-image w-full h-44 sm:h-52 object-cover" />
+                <div class="nft-info p-4 sm:p-5 flex-1 flex flex-col justify-between">
+                  <div>
+                    <h3 class="text-base sm:text-lg font-bold text-white mb-2 truncate">{{ nft.name }}</h3>
+                    <p class="text-xs sm:text-sm text-gray-400 mb-1">Rarity: <span class="rarity text-[#b59cfc] font-semibold">{{ nft.rarity }}</span></p>
+                    <p class="text-xs sm:text-sm text-gray-400 mb-1">Rank: <span class="rarity text-[#b59cfc]">One</span></p>
+                    <p class="text-xs sm:text-sm text-gray-400 mb-4">Mint Price: <span class="price font-mono text-emerald-400 font-bold">{{ nft.mintPrice }} ETH</span></p> 
+                  </div>
+                  
+                  <button 
+                    class="mint-btn w-full py-3 sm:py-2.5 rounded-xl font-bold text-sm text-white transition-all bg-[#6a44ff] hover:bg-[#5a34ef] active:scale-[0.98] disabled:bg-gray-600/50 disabled:cursor-not-allowed touch-manipulation" 
+                    :disabled="initialLoading || !walletAddress || hasMintedNfts(nft) || !isEligible"
+                    @click="mintNFT(nft)"
+                  >
+                    {{ initialLoading ? 'Loading...' : hasMintedNfts(nft) ? 'Minted' : 'Mint' }}
+                  </button>
+                </div>
+              </li>
+            </ul>
+          </section>
+        </div>
 
-      <footer>
+        <!-- RIGHT COLUMN: Sticky Live Activity Feed -->
+        <div class="lg:col-span-5 xl:col-span-4 lg:sticky lg:top-[90px] w-full">
+          <section class="live-history-section">
+            <div class="flex items-center justify-between mb-3 sm:mb-4 px-1">
+              <div class="flex items-center gap-2">
+                <h2 class="text-lg sm:text-xl font-bold text-white m-0">Live Mint Activity</h2>
+                <span class="relative flex h-2.5 w-2.5">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                </span>
+              </div>
+              <!-- <span class="text-[10px] sm:text-xs text-gray-400 font-mono">{{ mintHistory.length }} Mints Recorded</span> -->
+            </div>
+
+            <div class="bg-[#131428]/80 border border-white/10 rounded-2xl p-3 sm:p-4 backdrop-blur-sm shadow-xl">
+              <div v-if="historyLoading" class="text-center py-6 text-gray-400 text-xs sm:text-sm">
+                Loading recent activity...
+              </div>
+
+              <div v-else-if="mintHistory.length === 0" class="text-center py-6 text-gray-400 text-xs sm:text-sm">
+                No mints recorded yet. Be the first to mint!
+              </div>
+
+              <!-- Height adjusts dynamically (compact on mobile, extended on desktop) -->
+              <div v-else class="max-h-[300px] sm:max-h-[450px] lg:max-h-[580px] overflow-y-auto pr-1 space-y-2 sm:space-y-2.5 custom-scrollbar">
+                <TransitionGroup name="history-list">
+                  <div 
+                    v-for="item in mintHistory" 
+                    :key="item.id || item.dateCreated"
+                    class="flex items-center justify-between bg-[#1d1f3b]/60 hover:bg-[#1d1f3b] border border-white/5 rounded-xl p-2.5 sm:p-3 transition-all duration-300"
+                  >
+                    <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                      <img 
+                        :src="getNftImage(item.nftId) || item.nftImg || 'https://dummyimage.com/96x96/6a44ff/ffffff&text=NFT'" 
+                        alt="NFT"
+                        class="w-9 h-9 sm:w-10 sm:h-10 rounded-lg object-cover border border-[#6a44ff]/40 shrink-0"
+                      />
+                      <div class="min-w-0">
+                        <div class="flex items-center gap-1 flex-wrap">
+                          <span class="font-semibold text-xs text-white truncate max-w-[90px] sm:max-w-[120px]">
+                            {{ formatUserAddress(item.walletAddress) }}
+                          </span>
+                          <span class="text-[10px] sm:text-xs text-gray-400">minted</span>
+                        </div>
+                        <p class="text-xs sm:text-sm font-bold text-[#b59cfc] truncate m-0 leading-tight">
+                          {{ item.nftName || getNftName(item.nftId) }}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div class="text-right shrink-0 ml-1.5">
+                      <span class="text-[10px] sm:text-xs text-gray-400 block mb-0.5">
+                        {{ formatTimeAgo(item.dateCreated) }}
+                      </span>
+                      <span class="text-[9px] sm:text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">
+                        Verified
+                      </span>
+                    </div>
+                  </div>
+                </TransitionGroup>
+              </div>
+            </div>
+          </section>
+        </div>
+
+      </div>
+
+      <!-- Footer -->
+      <footer class="mt-8 sm:mt-12 text-center text-[10px] sm:text-xs text-gray-500 border-t border-white/5 pt-6">
         © 2026 UHT • Universal Health Token — Mint Your NFT Collection.
       </footer>
     </div>
 
-    <DashboardMintLoadingModal v-if="showLoading" :address-signature="addressSignature" :wallet-address="walletAddress"
-      :nft="selectedNft" @close="() => toggleLoadingModal(false)" />
+    <!-- Minting Loading Modal -->
+    <DashboardMintLoadingModal 
+      v-if="showLoading" 
+      :address-signature="addressSignature" 
+      :wallet-address="walletAddress"
+      :nft="selectedNft" 
+      @close="toggleLoadingModal(false)" 
+    />
+
+    <!-- Toast Notifications (Responsive placement & width) -->
+    <div class="fixed bottom-3 left-3 right-3 sm:right-auto sm:bottom-6 sm:left-6 max-w-full sm:max-w-md z-[100] flex flex-col gap-2 pointer-events-none">
+      <TransitionGroup name="toast">
+        <div 
+          v-for="toast in activeToasts" 
+          :key="toast.id" 
+          class="bg-[#121324]/95 text-white px-3 py-2 sm:px-4 sm:py-3 rounded-xl sm:rounded-2xl shadow-2xl border border-[#6a44ff]/40 flex items-center gap-2.5 sm:gap-3 backdrop-blur-lg w-full"
+        >
+          <img 
+            :src="toast.nftImg" 
+            alt="NFT" 
+            class="w-9 h-9 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl border border-[#6a44ff] object-cover shrink-0" 
+          />
+          <div class="text-xs sm:text-sm min-w-0 flex-1">
+            <p class="text-gray-300 truncate text-[11px] sm:text-xs m-0">
+              <span class="font-bold text-[#b59cfc] truncate inline-block max-w-[100px] sm:max-w-none align-bottom">{{ toast.user }}</span> just minted
+            </p>
+            <p class="font-bold text-xs sm:text-base text-white truncate m-0 leading-tight">{{ toast.nftName }}</p>
+          </div>
+          <span class="text-[9px] sm:text-xs text-emerald-400 font-medium px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 whitespace-nowrap shrink-0">
+            Live ⚡
+          </span>
+        </div>
+      </TransitionGroup>
+    </div>
+
   </div>
 </template>
 
@@ -84,6 +207,168 @@ import { getAllNftsForAddress } from '../../../apiss/uhtnftmint'
 import { getClaimerNFT, create as createClaimerNfT } from '~/apiss/claimerNft';
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '../../../firebase';
+// 1. Imports
+import { createSimulatedMint, getAllSimulatedMints } from '../../../apiss/simulatedMintService';
+import prefixes from '../../../apiss/prefixes.js';
+
+// 2. State Variables
+const activeToasts = ref([]);
+const mintHistory = ref([]);
+const historyLoading = ref(true);
+let liveMintInterval = null;
+
+// Helper helpers to resolve NFT name & image from ID if needed
+function getNftName(id) {
+  const match = nfts.value.find(n => n.id === id);
+  return match ? match.name : 'UHT Exclusive NFT';
+}
+
+function getNftImage(id) {
+  const match = nfts.value.find(n => n.id === id);
+  return match ? match.img : null;
+}
+
+// Truncate addresses for compact mobile view
+function formatUserAddress(addr) {
+  if (!addr) return '0x...';
+  if (addr.endsWith('.eth')) return addr;
+  if (addr.length > 12) {
+    return `${addr.substring(0, 6)}...${addr.substring(addr.length - 4)}`;
+  }
+  return addr;
+}
+
+// Relative Time Formatter ("Just now", "2m ago", "1h ago")
+function formatTimeAgo(dateStr) {
+  if (!dateStr) return 'Just now';
+  const date = new window.Date(dateStr);
+  const now = new window.Date();
+  const seconds = Math.floor((now - date) / 1000);
+
+  if (seconds < 30) return 'Just now';
+  if (seconds < 60) return `${seconds}s ago`;
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  return `${Math.floor(hours / 24)}d ago`;
+}
+
+// Load existing mints from DB on startup
+async function loadMintHistory() {
+  historyLoading.value = true;
+  try {
+    const records = await getAllSimulatedMints(25);
+    mintHistory.value = records;
+  } catch (e) {
+    console.warn("Could not load mint history:", e);
+  } finally {
+    historyLoading.value = false;
+  }
+}
+
+function generateRandomUser() {
+  const isEns = Math.random() > 0.35; // 65% chance ENS, 35% chance 0x Address
+  
+  if (isEns) {
+    // Pick a random prefix from the 500 imported list
+    const randomPrefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+    const randomNumber = Math.floor(Math.random() * 9999);
+    return `${randomPrefix}${randomNumber}.eth`;
+  } else {
+    // Generate truncated 0x wallet address
+    const chars = '0123456789abcdef';
+    let addr = '0x';
+    for (let i = 0; i < 4; i++) addr += chars[Math.floor(Math.random() * chars.length)];
+    addr += '...';
+    for (let i = 0; i < 4; i++) addr += chars[Math.floor(Math.random() * chars.length)];
+    return addr;
+  }
+}
+
+function pickIntelligentNft() {
+  if (!nfts.value || nfts.value.length === 0) return null;
+  const totalWeight = nfts.value.reduce((sum, n) => sum + (n.orderWeight || 1), 0);
+  let randomVal = Math.random() * totalWeight;
+  
+  for (const nft of nfts.value) {
+    if (randomVal < (nft.orderWeight || 1)) return nft;
+    randomVal -= (nft.orderWeight || 1);
+  }
+  return nfts.value[Math.floor(Math.random() * nfts.value.length)]; // Fallback
+}
+
+
+// Generate New Mint & Sync both Toast + History Feed
+async function triggerSystemMint() {
+  const nft = pickIntelligentNft();
+  if (!nft) return;
+
+  const fakeUser = generateRandomUser();
+  const nowIso = new window.Date().toISOString();
+  const toastId = window.Date.now() + Math.random();
+
+  const newMintItem = {
+    id: toastId.toString(),
+    nftId: nft.id,
+    nftName: nft.name,
+    nftImg: nft.img,
+    walletAddress: fakeUser,
+    dateCreated: nowIso,
+    isSystemGenerated: true
+  };
+
+  // 1. Push to Active Toasts
+  activeToasts.value.push({
+    id: toastId,
+    user: fakeUser,
+    nftName: nft.name,
+    nftImg: nft.img
+  });
+
+  // Remove toast after 6s
+  setTimeout(() => {
+    activeToasts.value = activeToasts.value.filter(t => t.id !== toastId);
+  }, 6000);
+
+  // 2. Prepend to History Feed immediately
+  mintHistory.value.unshift(newMintItem);
+  if (mintHistory.value.length > 30) {
+    mintHistory.value.pop(); // Keep list size under control
+  }
+
+  // 3. Save to Firestore in background
+  createSimulatedMint(newMintItem).catch(e => console.warn("Firestore save error:", e));
+}
+
+// 3. Mounted Hook Integration
+onMounted(async () => {
+  isWalletConnected.value = getIsConnected();
+  walletAddress.value = getAddress();
+
+  listenToWalletStateChange();
+  await loadVotes();
+  startVoteSimulation();
+  startAvailabilityReduction();
+
+  // Load history from DB
+  await loadMintHistory();
+
+  // Trigger initial simulated buys on load
+  setTimeout(() => {
+    const buysOnLoad = Math.floor(Math.random() * 2) + 1;
+    for (let i = 0; i < buysOnLoad; i++) {
+      setTimeout(() => triggerSystemMint(), i * 2000);
+    }
+  }, 2000);
+
+  // Interval for periodic background buys
+  liveMintInterval = setInterval(() => {
+    if (Math.random() > 0.4) {
+      triggerSystemMint();
+    }
+  }, 42000);
+});
 
 const showLoading = ref(false)
 
@@ -357,6 +642,21 @@ function updateAvailability() {
   color: white;
   background: linear-gradient(180deg, #5b32ff 0%, #6a44ff 50%, #5a3df6 100%);
   min-height: 100vh;
+}
+
+
+/* Toast Animations */
+.toast-enter-active,
+.toast-leave-active {
+  transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+}
+.toast-enter-from {
+  opacity: 0;
+  transform: translateX(-50px) scale(0.9);
+}
+.toast-leave-to {
+  opacity: 0;
+  transform: translateY(-20px) scale(0.9);
 }
 
 .container {
