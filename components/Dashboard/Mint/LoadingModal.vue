@@ -36,9 +36,9 @@
         <button class="close-btn" @click="closeModal">Close</button>
       </div>
 
-      <div v-else-if="completed" class="success-msg">
-        ✅ Mint Successful!
-        <button class="close-btn" @click="closeModal">Close</button>
+      <div v-else-if="completed" class="success-msg flex flex-col items-center">
+        ✅ Mint Successful! Check your wallet for your rewarded NFT
+        <button class="close-btn block" @click="closeModal">Close</button>
       </div>
     </div>
   </div>
@@ -138,8 +138,6 @@ async function startMinting() {
   }
   if (!error.value) {
     completed.value = true
-    // auto close after 2.5s
-    setTimeout(() => closeModal(), 2500)
   }
 }
 
