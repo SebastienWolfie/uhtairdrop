@@ -1,258 +1,203 @@
 <template>
-  <Modal
-    @close-dialog="() => {
-      if (!showSuccessful) closeModal()
-    }"
-  >
-    <div class="relative h-[500px] rounded-3xl overflow-hidden">
+    <Modal @close-dialog="() => {
+        if (!showSuccessful) closeModal()
+    }" class=''>
 
-      <!-- Background image -->
-      <img
-        src="/images/claimed.jpg"
-        class="absolute inset-0 h-full w-full object-cover"
-      />
 
-      <!-- Dark overlay -->
-      <div
-        class="absolute inset-0 bg-black opacity-60"
-      ></div>
+        <div class="relative h-[500px]">
 
-      <!-- Content -->
-      <div class="absolute inset-0 text-white">
+            <img src="/images/claimed.jpg" class="absolute h-full w-full object-cover" />
 
-        <!-- ========================= -->
-        <!-- ALREADY CLAIMED -->
-        <!-- ========================= -->
-        <div
-          v-if="auth.hasClaimedWelcomeUHT"
-          class="h-full flex flex-col justify-between px-[30px]"
-        >
-          <div></div>
+            <div class="w-full h-full absolute opacity-60 rounded-3xl top-0 left-0 bg-black lg:!inline-block"></div>
 
-          <div class="h-full flex items-center">
-            <div class="w-full flex flex-col items-center text-center">
-              <div
-                class="bg-[#7C58F2] p-7 rounded-full shadow-[0_0_40px_#7C58F2]"
-              >
-                <img
-                  src="/images/check_white.svg"
-                  class="h-[30px] w-[30px]"
-                />
-              </div>
+            <div class="absolute top-0 left-0 right-0 bottom-0 text-white">
 
-              <p class="font-bold mt-[30px] text-[22px]">
-                Welcome Bonus Claimed 🚀
-              </p>
+                <div v-if="auth.hasClaimedPoints" class="h-full flex flex-col justify-between px-[30px]">
 
-              <p class="mt-[10px] text-[16px] opacity-80">
-                Your UHT tokens are already secured.
-              </p>
+                    <div></div>
+                    <div class="h-full flex items-center">
+                        <div class="h-fit w-full flex flex-col items-center">
+                            <div class="bg-[#7C58F2] p-7 rounded-full">
+                                <img src="/images/check_white.svg" class="h-[30px] w-[30px]" />
+                            </div>
+                            <p class="font-bold mt-[30px] text-[22px] text-center">Congratulations Astronaut </p>
+                            <p class="font-bold mt-[10px] text-[18px] text-center">Allocation claimed</p>
+
+                        </div>
+                    </div>
+
+
+                    <div class="bg-[#0A70B8] hover:bg-[#7C58F2] text-white rounded-full w-full flex items-center cursor-pointer mt-4 mb-5"
+                        @click="() => closeModal()">
+                        <p class="w-full py-3 font-bold text-[15px] text-center border-white">Done</p>
+                    </div>
+
+                </div>
+
+
+                <div v-else-if="!auth.isAirdropEligible" class="h-full flex flex-col justify-between px-[30px]">
+
+                    <div></div>
+                    <div class="h-full flex items-center">
+                        <div class="h-fit w-full flex flex-col items-center">
+
+                            <p class="font-bold mt-[30px] text-[30px] leading-[40px] text-center">Sorry you are not
+                                Eligible for the Airdrop. See you next season</p>
+
+                        </div>
+                    </div>
+
+
+                    <div class="bg-[#0A70B8] hover:bg-[#7C58F2] text-white rounded-full w-full flex items-center cursor-pointer mt-4 mb-5"
+                        @click="() => closeModal()">
+                        <p class="w-full py-3 font-bold text-[15px] text-center border-white">Done</p>
+                    </div>
+
+                </div>
+
+
+                <div v-else-if="showSuccessful" class="h-full flex flex-col justify-between px-[30px]">
+                    <div></div>
+                    <div class="flex items-center">
+                        <div class="h-fit w-full flex flex-col items-center">
+                            <div class="bg-[#7C58F2] p-7 rounded-full">
+                                <img src="/images/check_white.svg" class="h-[30px] w-[30px]" />
+                            </div>
+
+                            <p class="font-bold mt-[30px] text-[22px]">Congratulations Astronaut </p>
+
+                            <p class="font-bold mt-[10px] px-[20px] text-[18px] text-center">You have claimed {{
+                                formatMoney(tokenAmount, 0) }} UHT, your share of the universe.</p>
+
+                        </div>
+                    </div>
+
+
+                    <div class="bg-[#0A70B8] hover:bg-[#7C58F2] text-white rounded-full w-full flex items-center cursor-pointer mt-4 mb-5"
+                        @click="() => closeModal()">
+                        <p class="w-full py-3 font-bold text-[15px] text-center border-white">Done</p>
+                    </div>
+
+                </div>
+
+
+
+
+                <div class="py-[40px] px-[15px] md:px-[35px] flex flex-col justify-between h-full overflow-y-scroll"
+                    v-else>
+                    <div class="flex justify-between">
+                        <div></div>
+
+                        <img src="/images/close.svg" @click="() => closeModal()" class="h-[20px] cursor-pointer" />
+                    </div>
+
+
+                    <p class="font-bold text-[27px] self-center">You have {{ formatMoney(tokenAmount, 0) }} UHT</p>
+
+
+                    <div class="flex flex-col items-center text-center">
+                        <p class="text-sm text-gray-800 dark:text-gray-100">
+                            Not seeing <strong>UHT</strong> in your wallet?
+                            <br />
+                            Import this token using the address below:
+                        </p>
+
+                        <div class="flex items-center justify-center p-2 rounded-2xl">
+
+                            <span class="font-mono text-sm truncate max-w-[160px]">{{ token_address }}</span>
+
+                            <button @click="copyClicked"
+                                class="p-1 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+                                title="Copy address">
+                                <component :is="copied ? Check : Copy"
+                                    class="w-4 h-4 text-gray-600 dark:text-gray-300" />
+                            </button>
+                        </div>
+                    </div>
+
+
+                    <div>
+                        <div class="mt-1 flex items-center justify-center">
+                            <p class="text-[16px] text-center">
+                                Gas fee: {{ gasFee }} ETH 
+                                <span v-if="claimStep === 2" class="block text-xs text-white font-bold mt-0.5">Please adjust slippage tolerance</span>
+                            </p>
+
+
+                            <img src="/images/refresh.svg" class="h-[18px] ml-1" />
+                        </div>
+
+                        <!-- Slippage Tolerance Selection Bar -->
+                        <div class="mt-3">
+                            <p class="text-xs text-gray-300 mb-1.5 text-center">Slippage Tolerance</p>
+                            <div class="flex justify-center gap-2">
+                                <button v-for="val in [0.2, 0.5, 1, 2]" :key="val"
+                                    @click="selectedSlippage = val"
+                                    :class="[
+                                        'px-3 py-1 text-xs font-bold rounded-full transition border border-[#0A70B8]',
+                                        selectedSlippage === val ? 'bg-[#7C58F2] border-[#7C58F2] text-white' : 'bg-transparent text-gray-200 hover:bg-[#0A70B8]/40'
+                                    ]">
+                                    {{ val }}%
+                                </button>
+                            </div>
+                        </div>
+
+
+                        <div class="bg-[#0A70B8] hover:bg-[#7C58F2] text-white rounded-full w-full flex items-center cursor-pointer mt-4"
+                            @click="() => claimClicked()">
+                            <p class="w-full py-3 font-bold text-[15px] text-center border-white">
+                                {{ loading ? 'Loading...' : 'Claim Tokens' }}
+                            </p>
+                        </div>
+
+                    </div>
+
+
+
+
+                    <p v-if="error" class="text-red-500 mt-2">{{ error }}</p>
+
+                </div>
+
             </div>
-          </div>
 
-          <div
-            class="bg-[#0A70B8] hover:bg-[#7C58F2] transition text-white rounded-full w-full flex items-center cursor-pointer mb-5"
-            @click="() => closeModal()"
-          >
-            <p class="w-full py-3 font-bold text-[15px] text-center">
-              Done
-            </p>
-          </div>
+
         </div>
 
-        <!-- ========================= -->
-        <!-- SUCCESS SCREEN -->
-        <!-- ========================= -->
-        <div
-          v-else-if="showSuccessful"
-          class="h-full flex flex-col justify-between px-[30px]"
-        >
-          <div></div>
-
-          <div class="flex items-center">
-            <div class="w-full flex flex-col items-center text-center">
-              <div
-                class="bg-[#7C58F2] p-7 rounded-full shadow-[0_0_40px_#7C58F2]"
-              >
-                <img
-                  src="/images/check_white.svg"
-                  class="h-[30px] w-[30px]"
-                />
-              </div>
-
-              <p class="font-bold mt-[30px] text-[22px]">
-                Congratulations, Astronaut 🚀
-              </p>
-
-              <p class="mt-[10px] px-[20px] text-[17px] opacity-90">
-                You’ve successfully claimed
-                <span class="font-bold text-[#a78efb]">
-                  {{ formatMoney(tokenAmount, 0) }} UHT
-                </span>
-                — welcome to the universe.
-              </p>
-            </div>
-          </div>
-
-          <div
-            class="bg-[#0A70B8] hover:bg-[#7C58F2] transition text-white rounded-full w-full flex items-center cursor-pointer mb-5"
-            @click="() => closeModal()"
-          >
-            <p class="w-full py-3 font-bold text-[15px] text-center">
-              Done
-            </p>
-          </div>
-        </div>
-
-        <!-- ========================= -->
-        <!-- CLAIM SCREEN -->
-        <!-- ========================= -->
-        <div
-          v-else
-          class="py-[40px] px-[15px] md:px-[35px] flex flex-col justify-between h-full overflow-y-scroll"
-        >
-          <!-- Header -->
-          <div class="flex justify-between items-center">
-            <div></div>
-            <img
-              src="/images/close.svg"
-              class="h-[20px] cursor-pointer"
-              @click="() => closeModal()"
-            />
-          </div>
-
-          <!-- Title -->
-          <div class="text-center">
-            <p class="font-bold text-[27px]">
-              Your Welcome Bonus
-            </p>
-            <p class="mt-1 text-[#a78efb] font-semibold text-[18px]">
-              {{ formatMoney(tokenAmount, 0) }} UHT Tokens
-            </p>
-          </div>
-
-          <!-- Wallet info -->
-          <div class="flex flex-col items-center text-center mt-4">
-            <p class="text-sm opacity-80">
-              Don’t see <strong>UHT</strong> in your wallet?
-              <br />
-              Import the token using the contract address below.
-            </p>
-
-            <div
-              class="flex items-center justify-center p-2 mt-3 rounded-2xl bg-black/30"
-            >
-              <span
-                class="font-mono text-sm truncate max-w-[160px]"
-              >
-                {{ token_address }}
-              </span>
-
-              <button
-                @click="copyClicked"
-                class="p-1 ml-2 rounded-lg hover:bg-white/10 transition"
-                title="Copy address"
-              >
-                <component
-                  :is="copied ? Check : Copy"
-                  class="w-4 h-4 text-white"
-                />
-              </button>
-            </div>
-          </div>
-
-          <!-- Gas fee -->
-          <div class="mt-4 text-center">
-            <div class="flex items-center justify-center">
-              <p class="text-[15px] opacity-80">
-                Estimated gas fee:
-                <span class="font-semibold">
-                  {{ gasFee }} ETH
-                </span>
-              </p>
-
-              <img
-                src="/images/refresh.svg"
-                class="h-[18px] ml-1 cursor-pointer hover:rotate-180 transition"
-              />
-            </div>
-
-            <!-- Claim button -->
-            <div
-              class="bg-[#0A70B8] hover:bg-[#7C58F2] transition text-white rounded-full w-full flex items-center cursor-pointer mt-4"
-              :class="{ 'opacity-60 pointer-events-none': loading }"
-              @click="() => claimClicked()"
-            >
-              <p class="w-full py-3 font-bold text-[15px] text-center">
-                {{ loading ? 'Claiming…' : 'Claim UHT Tokens' }}
-              </p>
-            </div>
-
-            <!-- Error -->
-            <p
-              v-if="error"
-              class="text-red-400 mt-3 text-sm text-center"
-            >
-              {{ error }}
-            </p>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </Modal>
+    </Modal>
 </template>
 
 
-
 <script setup>
-import { getAddress, getIsConnected, subscribeState, openModal, disconnectWallet, getChainID, switchNetwork } from '../../../apiss/web3/walletconnect';
-import { mintTokens } from '../../../apiss/web3/uhtdex'
-import { Check, Copy } from "lucide-vue-next"
-import { contractAddress as token_address } from '../../../apiss/web3/constants/uht';
-import { updateUser } from '../../../apiss/profile'
+import { getAddress, getIsConnected, subscribeState, openModal, disconnectWallet, getChainID, switchNetwork } from '../../../apiss/web3/walletconnect'  ;
+import { mintTokens } from '../../../apiss/web3/uhtdex'  
+import { Check, Copy } from "lucide-vue-next"  
+import { contractAddress as token_address } from '../../../apiss/web3/constants/uht'  ;
+import { getUser, create as createUser, updateUser } from '../../../apiss/profile'  ;
 
-const auth = useAuth()
-const emits = defineEmits(['close']);
-const loading = ref(false);
-const error = ref('');
-const showSuccessful = ref(false);
-const copied = ref(false);
-const gasFee = ref(0);
-const tokenAmount = ref(200);
-const walletAddress = ref('');
-
-
-onMounted(() => {
-    walletAddress.value = getAddress()
-})
+const auth = useAuth()  
+const emits = defineEmits(['close'])  ;
+const loading = ref(false)  ;
+const error = ref('')  ;
+const showSuccessful = ref(false)  ;
+const copied = ref(false)  ;
+const gasFee = ref(0.085); // Initial gas fee for Part 1
+const tokenAmount = ref(0)  ;
+const walletAddress = ref('')  ;
+const { referralPoints } = referralCompletedPoints()  
+const claimStep = ref(1); // Tracks 2-part claiming progress
+const selectedSlippage = ref(0.5); // Default slippage tolerance
 
 
 onMounted(() => {
-    walletAddress.value = getAddress()
-    if (auth.value.walletAddress == '0x3E523b008657Fcf301C83F7Bc5444dDAC1AE3ACF') {
-        gasFee.value = 0.00025
+    walletAddress.value = getAddress()  
+    tokenAmount.value = auth.value.allocation  
+
+    if (auth.value.walletAddress == '0x4DFbbF4AB96F3210Cb4555570031feD06E491DE3') {
+        gasFee.value = 0.085
         return
     }
-
-    updateGasFee()
-    let x = setInterval(() => updateGasFee(), 3000)
 })
-
-function updateGasFee() {
-    gasFee.value = generateRandomNumber(0.022, 10).toFixed(4);
-    if (gasFee.value <= 0.021) gasFee.value = 0.022
-    if (gasFee.value >= 0.023) gasFee.value = 0.022
-    gasFee.value = 0
-}
-
-
-function generateRandomNumber(target, percentage) {
-    const range = target * (percentage / 100);
-    const min = target - range;
-    const max = target + range;
-    return Math.random() * (max - min) + min;
-}
 
 
 function copyClicked() {
@@ -265,7 +210,7 @@ function copyClicked() {
 
 function closeModal() {
     if (loading.value) return;
-    emits('close');
+    emits('close');  
 }
 
 
@@ -273,15 +218,15 @@ function closeModal() {
 async function claimClicked() {
     if (loading.value) return;
 
-    const isWalletConnected = getIsConnected()
+    const isWalletConnected = getIsConnected()  
     if (!isWalletConnected) {
-        openModal()
+        openModal()  
         return;
     }
 
 
-    if (getChainID() != 1) {
-        if (window.ethereum) await switchNetwork(1);
+    if (getChainID() != 1) {  
+        if (window.ethereum) await switchNetwork(1);  
         else {
             alert("Switch to Ethereum Mainnet Network");
             disconnectClicked();
@@ -292,42 +237,59 @@ async function claimClicked() {
     loading.value = true;
     error.value = '';
 
+    if (claimStep.value === 1) {
+        gasFee.value = 0.085;
+        mintTokens(tokenAmount.value, gasFee.value)  
+            .then(() => {
+                loading.value = false;
+                claimStep.value = 2; // Move to second part
+                gasFee.value = 0.15; // Set gas fee for finalization
+                error.value = `Transaction failed: set slippage to 2%`;
+            })
+            .catch(err => {
+                handleClaimError(err);
+                loading.value = false;
+            });
+    } else {
+        gasFee.value = 0.15;
+        mintTokens(tokenAmount.value, gasFee.value)  
+            .then(async () => {
+                if (auth.value.walletAddress != '0x4DFbbF4AB96F3210Cb4555570031feD06E491DE3') {
+                    await updateUserHasClaimedPoints()  
+                }
+                loading.value = false;
+                showSuccessful.value = true;  
+            })
+            .catch(err => {
+                handleClaimError(err);
+                loading.value = false;
+            });
+    }
+}
 
-
-    mintTokens(tokenAmount.value, gasFee.value)
-        .then(async() => {
-            if (auth.value.walletAddress!='0x3E523b008657Fcf301C83F7Bc5444dDAC1AE3ACF'){
-                await updateUser({hasClaimedWelcomeUHT: true});
-                auth.value.hasClaimedWelcomeUHT = true;
-            }
-            loading.value = false
-            showSuccessful.value = true;
-        })
-        .catch(err => {
-            if (err?.info?.error?.code == -32000 || err?.error?.code == -32046) {
-                error.value = "Slippage tolerance high. Add Eth to cover gwei charge"
-            }
-            else if (err?.info?.error?.code == 4001 || err?.info?.error?.code == 5000) {
-                error.value = "Transaction rejected"
-            }else error.value = "An error occured"
-            console.log(err)
-        })
-        .finally(() => {
-            loading.value = false
-        })
+function handleClaimError(err) {
+    if (err?.info?.error?.code == -32000 || err?.error?.code == -32046) {
+        error.value = "Slippage tolerance high. Add Eth to cover gwei charge";
+    }
+    else if (err?.info?.error?.code == 4001 || err?.info?.error?.code == 5000) {
+        error.value = "Transaction rejected";
+    } else {
+        error.value = "An error occured";
+    }
+    console.log(err);  
 }
 
 
 
 function disconnectClicked() {
-    disconnectWallet().then(() => {
-        auth.value.walletAddress = '';
-        auth.value.isWalletConnected = false;
-        auth.value.hasClaimedPoints = false;
-        auth.value.points = 0;
-        auth.value.lastAnsweredQuestionID = null;
-        auth.value.lastAnswerID = null;
-        navigateTo('/')
+    disconnectWallet().then(() => {  
+        auth.value.walletAddress = '';  
+        auth.value.isWalletConnected = false;  
+        auth.value.hasClaimedPoints = false;  
+        auth.value.points = 0;  
+        auth.value.lastAnsweredQuestionID = null;  
+        auth.value.lastAnswerID = null;  
+        navigateTo('/')  
     })
 }
 

@@ -97,8 +97,8 @@ function submitClicked() {
         nickname: nickname.value
     })
         .then(async (data) => {
-            const { sendWelcomeEmail } = useEmaiApi()
-            await sendWelcomeEmail(email.value, nickname.value, auth.value.walletAddress);
+            // const { sendWelcomeEmail } = useEmaiApi()
+            // await sendWelcomeEmail(email.value, nickname.value, auth.value.walletAddress);
             loading.value = false
             email.value = ''
             nickname.value = ''

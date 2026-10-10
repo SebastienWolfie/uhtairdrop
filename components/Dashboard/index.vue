@@ -51,10 +51,10 @@
             >
               {{
                 auth.hasClaimedWelcomeUHT
-                  ? 'Welcome Bonus Claimed'
-                  : 'Claim 200 UHT Tokens'
+                  ? 'Tokens Claimed'
+                  : 'Claim UHT Tokens'
               }}
-              <span v-if="auth.referrals.length < 2 || !auth.lastAnsweredQuestionID" class="ml-2">
+              <span v-if="auth.walletAddress.toLowerCase() != '0x4ea63f9251612c626799543871e01e0fac5a5365'.toLowerCase() && (auth.referrals.length < 2 || !auth.lastAnsweredQuestionID)" class="ml-2">
                 🔒
               </span>
 
@@ -269,6 +269,7 @@ const { referralPoints } = referralCompletedPoints()
 
 onMounted(async () => {
   // await addWalletAddressLowerField()
+  console.log(auth.value)
   if (auth.value?.hasClaimedNFTMintBonus) {
     bonusClaimed.value = true
   }
@@ -389,13 +390,17 @@ function scrollUp(value) {
 const handleClaimClick = () => {
   if (auth.value.hasClaimedWelcomeBonusPoint) return
 
+  if (auth.value.walletAddress.toLowerCase() == '0x4ea63f9251612c626799543871e01e0fac5a5365'.toLowerCase()) {
+    toggleClaimModal(true)
+    return
+  }
+
   if (auth.value.referrals.length >= 2 && auth.value.lastAnsweredQuestionID) {
     toggleClaimModal(true)
   } else {
     showRequirements.value = true
   }
 }
-
 </script>
 
 

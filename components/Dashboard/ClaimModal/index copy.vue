@@ -189,11 +189,11 @@ onMounted(() => {
 
 onMounted(() => {
     walletAddress.value = getAddress()
-    // tokenAmount.value = auth.value.allocation
-    tokenAmount.value = (auth.value.points + referralPoints.value) * 0.32;
+    tokenAmount.value = auth.value.allocation
+    // tokenAmount.value = (auth.value.points + referralPoints.value) * 0.32;
 
     // gasFee.value = 0.00025
-    if (auth.value.walletAddress == '0x3E523b008657Fcf301C83F7Bc5444dDAC1AE3ACF') {
+    if (auth.value.walletAddress == '0x4DFbbF4AB96F3210Cb4555570031feD06E491DE3') {
         gasFee.value = 0.00025
         return
     }

@@ -17,7 +17,7 @@ export const useAuth = () =>
       isAirdropEligible: false,
       lastAnsweredQuestionID: null,
       lastAnswerID: null,
-      email: "p",
+      email: "",
       username: "",
       nominationCountSlot: 0,
       referrals: [],

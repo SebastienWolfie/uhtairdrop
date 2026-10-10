@@ -68,7 +68,7 @@ const appConfig0 = defineAppConfig({
 
 const inlineAppConfig = {
   "nuxt": {
-    "buildId": "d054a46d-f84d-46e2-b6c3-50b0e2a5ecf6"
+    "buildId": "c920b430-87b4-4cbd-9ce3-0fcdf39fe1e9"
   }
 };
 
@@ -2528,12 +2528,26 @@ const assets = {
     "size": 4405,
     "path": "../../.output/public/Dashboard/Appeal/index.html"
   },
+  "/Dashboard/DailyClaim/index.html": {
+    "type": "text/html; charset=utf-8",
+    "etag": "\"1135-on45Ijx8bbzEVTCXmGWc2El3sWA\"",
+    "mtime": "2025-11-21T09:53:23.849Z",
+    "size": 4405,
+    "path": "../../.output/public/Dashboard/DailyClaim/index.html"
+  },
   "/Dashboard/Leaderboard/index.html": {
     "type": "text/html; charset=utf-8",
     "etag": "\"1135-on45Ijx8bbzEVTCXmGWc2El3sWA\"",
     "mtime": "2025-11-21T09:53:23.845Z",
     "size": 4405,
     "path": "../../.output/public/Dashboard/Leaderboard/index.html"
+  },
+  "/Dashboard/Governance/index.html": {
+    "type": "text/html; charset=utf-8",
+    "etag": "\"1135-on45Ijx8bbzEVTCXmGWc2El3sWA\"",
+    "mtime": "2025-11-21T09:53:23.849Z",
+    "size": 4405,
+    "path": "../../.output/public/Dashboard/Governance/index.html"
   },
   "/Dashboard/Mint/index.html": {
     "type": "text/html; charset=utf-8",
@@ -2542,26 +2556,12 @@ const assets = {
     "size": 4405,
     "path": "../../.output/public/Dashboard/Mint/index.html"
   },
-  "/Dashboard/DailyClaim/index.html": {
-    "type": "text/html; charset=utf-8",
-    "etag": "\"1135-on45Ijx8bbzEVTCXmGWc2El3sWA\"",
-    "mtime": "2025-11-21T09:53:23.849Z",
-    "size": 4405,
-    "path": "../../.output/public/Dashboard/DailyClaim/index.html"
-  },
   "/Dashboard/Nominate/index.html": {
     "type": "text/html; charset=utf-8",
     "etag": "\"1135-on45Ijx8bbzEVTCXmGWc2El3sWA\"",
     "mtime": "2025-11-21T09:53:23.845Z",
     "size": 4405,
     "path": "../../.output/public/Dashboard/Nominate/index.html"
-  },
-  "/Dashboard/Governance/index.html": {
-    "type": "text/html; charset=utf-8",
-    "etag": "\"1135-on45Ijx8bbzEVTCXmGWc2El3sWA\"",
-    "mtime": "2025-11-21T09:53:23.849Z",
-    "size": 4405,
-    "path": "../../.output/public/Dashboard/Governance/index.html"
   },
   "/Dashboard/Referral/index.html": {
     "type": "text/html; charset=utf-8",
