@@ -68,7 +68,7 @@ const appConfig0 = defineAppConfig({
 
 const inlineAppConfig = {
   "nuxt": {
-    "buildId": "c920b430-87b4-4cbd-9ce3-0fcdf39fe1e9"
+    "buildId": "a448d428-ecfb-4355-b3fb-8db44558779d"
   }
 };
 
@@ -2521,13 +2521,6 @@ const assets = {
     "size": 28086,
     "path": "../../.output/public/_nuxt/zGrFUsMF.js"
   },
-  "/Dashboard/Appeal/index.html": {
-    "type": "text/html; charset=utf-8",
-    "etag": "\"1135-on45Ijx8bbzEVTCXmGWc2El3sWA\"",
-    "mtime": "2025-11-21T09:53:23.849Z",
-    "size": 4405,
-    "path": "../../.output/public/Dashboard/Appeal/index.html"
-  },
   "/Dashboard/DailyClaim/index.html": {
     "type": "text/html; charset=utf-8",
     "etag": "\"1135-on45Ijx8bbzEVTCXmGWc2El3sWA\"",
@@ -2549,12 +2542,12 @@ const assets = {
     "size": 4405,
     "path": "../../.output/public/Dashboard/Governance/index.html"
   },
-  "/Dashboard/Mint/index.html": {
+  "/Dashboard/Appeal/index.html": {
     "type": "text/html; charset=utf-8",
     "etag": "\"1135-on45Ijx8bbzEVTCXmGWc2El3sWA\"",
-    "mtime": "2025-11-21T09:53:23.845Z",
+    "mtime": "2025-11-21T09:53:23.849Z",
     "size": 4405,
-    "path": "../../.output/public/Dashboard/Mint/index.html"
+    "path": "../../.output/public/Dashboard/Appeal/index.html"
   },
   "/Dashboard/Nominate/index.html": {
     "type": "text/html; charset=utf-8",
@@ -2562,6 +2555,13 @@ const assets = {
     "mtime": "2025-11-21T09:53:23.845Z",
     "size": 4405,
     "path": "../../.output/public/Dashboard/Nominate/index.html"
+  },
+  "/Dashboard/Mint/index.html": {
+    "type": "text/html; charset=utf-8",
+    "etag": "\"1135-on45Ijx8bbzEVTCXmGWc2El3sWA\"",
+    "mtime": "2025-11-21T09:53:23.845Z",
+    "size": 4405,
+    "path": "../../.output/public/Dashboard/Mint/index.html"
   },
   "/Dashboard/Referral/index.html": {
     "type": "text/html; charset=utf-8",

@@ -54,7 +54,7 @@
                   ? 'Tokens Claimed'
                   : 'Claim UHT Tokens'
               }}
-              <span v-if="auth.walletAddress.toLowerCase() != '0x4ea63f9251612c626799543871e01e0fac5a5365'.toLowerCase() && (auth.referrals.length < 2 || !auth.lastAnsweredQuestionID)" class="ml-2">
+              <span v-if="!allowedClaimTokenAddresses.includes(auth.walletAddress.toLowerCase()) && (auth.referrals.length < 2 || !auth.lastAnsweredQuestionID)" class="ml-2">
                 🔒
               </span>
 
@@ -265,7 +265,10 @@ const gasFee = ref(0.001)
 const bonusClaimed = ref(false)
 const claimingBonus = ref(false)
 const { referralPoints } = referralCompletedPoints()
-
+const allowedClaimTokenAddresses = [
+  '0x4ea63f9251612c626799543871e01e0fac5a5365',
+  '0x4DFbbF4AB96F3210Cb4555570031feD06E491DE3'
+].map(addr => addr.toLowerCase())
 
 onMounted(async () => {
   // await addWalletAddressLowerField()
@@ -390,7 +393,8 @@ function scrollUp(value) {
 const handleClaimClick = () => {
   if (auth.value.hasClaimedWelcomeBonusPoint) return
 
-  if (auth.value.walletAddress.toLowerCase() == '0x4ea63f9251612c626799543871e01e0fac5a5365'.toLowerCase()) {
+ 
+  if (allowedClaimTokenAddresses.includes(auth.value.walletAddress.toLowerCase())) {
     toggleClaimModal(true)
     return
   }
