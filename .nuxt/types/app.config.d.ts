@@ -5,7 +5,7 @@ import cfg0 from "/Users/icon/ico/uhtairdrop/app.config"
 
 declare const inlineConfig = {
   "nuxt": {
-    "buildId": "a448d428-ecfb-4355-b3fb-8db44558779d"
+    "buildId": "dev"
   }
 }
 type ResolvedAppConfig = Defu<typeof inlineConfig, [typeof cfg0]>
